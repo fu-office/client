@@ -4,16 +4,29 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 	<display-name>client</display-name>
+	<!-- init param -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		 <param-value>/WEB-INF/spring/application.xml</param-value>
 	</context-param>
+	<!-- listener -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	<!-- filter -->
+	<filter>
+		<filter-name>Charset</filter-name>
+		<filter-class>com.lbyt.client.filters.CharsetFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>Charset</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- session config -->
 	<session-config>
           <session-timeout>30</session-timeout>
      </session-config>
+     <!-- servlet set start -->
      <servlet>
      	<description>json request</description>
      	<servlet-name>json</servlet-name>
@@ -28,7 +41,10 @@
      	<servlet-name>json</servlet-name>
      	<url-pattern>*.json</url-pattern>
      </servlet-mapping>
+     <!-- servlet set end -->
+     <!-- index.html -->
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>

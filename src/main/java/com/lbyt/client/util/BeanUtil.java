@@ -3,6 +3,10 @@ package com.lbyt.client.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * base useful tool
@@ -10,6 +14,8 @@ import java.lang.reflect.Method;
  *
  */
 public class BeanUtil {
+	// cache for class's field
+	private static final Map<String, List<Field>> classField = new HashMap<String, List<Field>>();
 	
 	/**	
 	 * 
@@ -31,21 +37,38 @@ public class BeanUtil {
 		if (target == null || src == null) {
 			return target;
 		}
-		Class<? extends Object> srcClass = Class.forName(src.getClass().getName());
+		boolean cached = false;
+		String srcClassPath = src.getClass().getName(); // class path of src
+		List<Field> srcFieldList = classField.get(srcClassPath); // cache of list
+		Field[] srcFields = null;
+		Class<? extends Object> srcClass = Class.forName(srcClassPath);
 		Class<? extends Object> targetClass = Class.forName(target.getClass().getName());
-		Field[] srcFieleds = srcClass.getDeclaredFields();
-		for (int i = 0, len = srcFieleds.length; i < len; i++) {
-			String field = srcFieleds[i].getName();
-			field = field.substring(0, 1).toUpperCase() + field.substring(1);
+		if (srcFieldList == null) {
+			srcFieldList = new ArrayList<Field>();
+			srcFields = srcClass.getDeclaredFields();
+		} else {
+			cached = true;
+		}
+		int i = 0, len = srcFields == null ? srcFieldList.size() : srcFields.length;
+		for (; i < len; i++) {
+			Field field =  srcFields == null ? srcFieldList.get(i) : srcFields[i];
+			String fieldName = field.getName();
+			fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 			Method setMethod, getMethod;
-			try {
-				setMethod = targetClass.getMethod("set" + field, srcFieleds[i].getType());
-				getMethod = srcClass.getMethod("get" + field);
+			if (cached) {
+				setMethod = targetClass.getMethod("set" + fieldName, field.getType());
+				getMethod = srcClass.getMethod("get" + fieldName);
 				setMethod.invoke(target, getMethod.invoke(src, null));
-			}catch(Exception e){
-				System.out.println(e);
+			} else {
+				try {
+					setMethod = targetClass.getMethod("set" + fieldName, field.getType());
+					getMethod = srcClass.getMethod("get" + fieldName);
+					setMethod.invoke(target, getMethod.invoke(src, null));
+					srcFieldList.add(field);
+				}catch(Exception e){}
 			}
 		}
+		classField.put(srcClassPath, srcFieldList);
 		return target;
 	}
 	

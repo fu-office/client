@@ -2,6 +2,8 @@ package com.lbyt.client.bean;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class Client extends  JsonBean{
 
 	/**
@@ -10,6 +12,8 @@ public class Client extends  JsonBean{
 	private static final long serialVersionUID = 595470872980813098L;
 	
 	private Date modifyDate;
+	
+	private Date registerDate;
 	
 	private String id;
 	
@@ -32,14 +36,6 @@ public class Client extends  JsonBean{
 	private String shopName;
 	
 	private String remark;
-
-	public Date getModifyDate() {
-		return modifyDate;
-	}
-
-	public void setModifyDate(Date modifyDate) {
-		this.modifyDate = modifyDate;
-	}
 
 	public String getId() {
 		return id;
@@ -89,14 +85,6 @@ public class Client extends  JsonBean{
 		this.postCode = postCode;
 	}
 
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
 	public String getProvince() {
 		return province;
 	}
@@ -117,6 +105,7 @@ public class Client extends  JsonBean{
 		return shopName;
 	}
 
+	@JsonProperty("shopName")
 	public void setShopName(String shopName) {
 		this.shopName = shopName;
 	}
@@ -124,11 +113,34 @@ public class Client extends  JsonBean{
 	public String getRemark() {
 		return remark;
 	}
-
+	
+	@JsonProperty("remark")
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
-	
+
+	public Date getModifyDate() {
+		return modifyDate;
+	}
+
+	public void setModifyDate(Date modifyDate) {
+		this.modifyDate = modifyDate;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
+	}
 	
 }

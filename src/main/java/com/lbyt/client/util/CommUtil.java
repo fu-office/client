@@ -7,7 +7,7 @@ package com.lbyt.client.util;
  */
 public class CommUtil {
 	
-	public static boolean isEmpty(String str){
+	public static boolean isEmpty(String str) {
 		return str == null || "".equals(str);
 	}
 	

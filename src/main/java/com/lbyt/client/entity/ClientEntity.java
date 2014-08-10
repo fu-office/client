@@ -1,12 +1,19 @@
-package com.lbyt.client.persistent.bean;
+package com.lbyt.client.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PClient {
+
+public class ClientEntity implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4417093805657707087L;
+
+	private String id;
 	
 	private Date modifyDate;
-	
-	private String id;
 	
 	private String address;
 	
@@ -28,14 +35,6 @@ public class PClient {
 	
 	private String remark;
 	
-	public Date getModifyDate() {
-		return modifyDate;
-	}
-
-	public void setModifyDate(Date modifyDate) {
-		this.modifyDate = modifyDate;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -84,14 +83,6 @@ public class PClient {
 		this.postCode = postCode;
 	}
 
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
 	public String getProvince() {
 		return province;
 	}
@@ -123,4 +114,21 @@ public class PClient {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public Date getModifyDate() {
+		return modifyDate;
+	}
+
+	public void setModifyDate(Date modifyDate) {
+		this.modifyDate = modifyDate;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+	
 }
