@@ -1,5 +1,6 @@
 (function(window, $) {
-	window.ROOT = 'http://localhost:8080/client/';
+	window.ROOT = window.location.protocol + "//" + window.location.host + "/client/";
+	window.token = "";
 	/*
 	 * 将Form数据转化为JSON对象
 	 */
@@ -395,9 +396,7 @@
 			type : options.type ? options.type : 'POST',
 			contentType : "application/json; charset=UTF-8",
 			url : (options.url.indexOf('http://') && options.url.indexOf('https://')) ? window.ROOT + options.url : options.url,
-			data : (options.data && $.isPlainObject(options.data)) ? JSON.stringify($.extend(true, {
-				token : window.token
-			}, options.data)) : options.data
+			data : (options.data && $.isPlainObject(options.data)) ? JSON.stringify(options.data) : options.data
 		});
 		!opts.hideShadow && AJAX.addMask(opts);
 		return $.ajax(opts);

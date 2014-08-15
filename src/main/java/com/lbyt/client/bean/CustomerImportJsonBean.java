@@ -7,9 +7,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 public class CustomerImportJsonBean extends FileUploadJsonBean {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7136919029242968412L;
 	
 	private File file;

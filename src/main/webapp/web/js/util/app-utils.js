@@ -1,10 +1,6 @@
 (function(window, $) {
-	// var ooo = (new Date()).getTime();
-	// TODO
-	// 此为测试单个APP时候使用，在使用桌面时，desktop-utils.js中配置会覆盖此配置，
-	// 实际环境中需要删除此配置
-	window.ROOT = 'http://127.0.0.1:8080/tzs/';
 	window.Desktop = {};
+	window.token = "";
 	window.SYSURL = {
 		ADDR : 'map/getAllProvince'
 	};
@@ -540,7 +536,6 @@
 		};
 		AJAX.addMask(opts);
 		var data = new FormData();
-		data.append("token", window.token);
 		for ( var key in options.data) {
 			data.append(key, options.data[key]);
 		}
@@ -595,9 +590,8 @@
 			url : AJAX.getURL(options.url),
 			data : options.data 
 						? ($.isPlainObject(options.data) 
-								? JSON.stringify($.extend(true, {token : window.token}, options.data))
-									: options.data)
-						: JSON.stringify({token : window.token})
+								? JSON.stringify(options.data) : 
+									options.data): JSON.stringify({})
 		});
 		AJAX.addMask(opts);
 		return $.ajax(opts);

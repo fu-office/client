@@ -39,38 +39,6 @@ table {
 /* Reset CSS */
 
 /* Common CSS */
-::-webkit-scrollbar {
-	width: 9px;
-	height: 9px;
-	-webkit-border-radius: 5px;
-	background-color: rgba(253, 245, 206, 0.9);
-}
-
-::-webkit-scrollbar-button:start:decrement,::-webkit-scrollbar-button:end:increment {
-	display: block;
-	height: 0;
-	width: 0;
-	background-color: transparent;
-}
-
-::-webkit-scrollbar-track-piece {
-	-webkit-border-radius: 0;
-	-webkit-border-bottom-right-radius: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:vertical {
-	height: 50px;
-	-webkit-border-radius: 5px;
-	background-color: rgba(253, 208, 91, 0.6);
-}
-
-::-webkit-scrollbar-thumb:horizontal {
-	width: 50px;
-	-webkit-border-radius: 5px;
-	background-color: rgba(253, 208, 91, 0.6);
-}
-
 body {
 	color: #333333;
 	font-size: 10px;
@@ -101,8 +69,9 @@ input,textarea,select {
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 	width: 146px;
-	height: 16px;
+	height: 24px;
 	line-height: 16px;
+	outline : none;
 }
 
 input[type="radio"],input[type="checkbox"] {

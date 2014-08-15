@@ -2,34 +2,30 @@ package com.lbyt.client.filters;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class CharsetFilter implements Filter{
+import org.springframework.web.filter.OncePerRequestFilter;
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
-		
-	}
+import com.lbyt.client.HttpContextHolder;
+
+public class CharsetFilter extends OncePerRequestFilter{
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		//set character
-		request.setCharacterEncoding("UTF-8");
-		response.setCharacterEncoding("UTF-8");
-		chain.doFilter(request, response);
-	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-		
-	}
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
+            throws ServletException, IOException {
+        //设置默认字符集
+        response.setCharacterEncoding("UTF-8");
+        //缓存request对象
+        HttpContextHolder.setRequest(request);
+        //缓存response对象
+        HttpContextHolder.setResponse(response);
+        //调用service
+        filterChain.doFilter(request, response);
+        //情况当前缓存的request和response
+        HttpContextHolder.clear();
+    }
 	
 }

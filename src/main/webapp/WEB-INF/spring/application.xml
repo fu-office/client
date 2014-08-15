@@ -7,7 +7,8 @@
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-    
+		
+    <bean id="domainFilter" class="com.lbyt.client.filters.CharsetFilter"/>
     <!-- tansaction --> 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
