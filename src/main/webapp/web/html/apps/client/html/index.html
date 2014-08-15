@@ -1,0 +1,58 @@
+<!DOCTYPE >
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="../../../../js/lib/jquery/css/jquery-ui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../css/common/ui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../css/common/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/client.css">
+	</head>
+	<body>
+		<div class="content">
+			<ul class="tab">
+				<li data-module="client" class="tab-active">客户登记/查询</li>
+				<li data-module="gift" class="">赠品登记/查询</li>
+				<li data-module="area" class="">区域设置</li>
+			</ul>
+			<div>
+				<div class="tab-cons" id="client">
+					<div class="fm-row">
+						<div>
+							<label class="fm-lb">省份：</label>
+							<select id="province" class="ht-select"></select>
+						</div>
+						<div>
+							<label class="fm-lb">城市：</label>
+							<select id="city" class="ht-select"></select>
+						</div>
+						<div>
+							<label class="fm-lb">客户姓名:</label>
+							<input type="text" name="" />
+						</div>
+						<div class="btn-grp">
+							<button class="btn search">
+								<i class="icon-search"></i> 搜索
+							</button>
+							<input type="file" name="file" id="client-excel" class="hide" />
+							<button class="btn import">
+								<i class="icon-upload"></i> 导入
+							</button>
+							<button class="btn export">
+								<i class="icon-export"></i> 导出
+							</button>
+						</div>
+					</div>
+					<div class="list"></div>
+				</div>
+				<div class="tab-cons" id="gift"></div>
+				<div class="tab-cons" id="area"></div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../../../../js/lib/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="../../../../js/lib/jquery/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../../../../js/util/ui.js"></script>
+		<script type="text/javascript" src="../../../../js/util/app-utils.js"></script>
+		<script type="text/javascript" src="../../../../js/util/desktop-utils.js"></script>
+		<script type="text/javascript" src="../js/client.js"></script>
+	</body>
+</html>

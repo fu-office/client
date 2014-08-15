@@ -15,7 +15,7 @@
 		$taskbar = $('.task-bar'), //
 		zCount = 1000, //
 		URL = {
-			GET_AUTH : "web/json/apps.json"
+			GET_AUTH : "web/json/apps.text"
 		}, //
 		DATA_PATTERN = 'yyyy年MM月dd日 hh:mm';
 	var DESK_PAD = {

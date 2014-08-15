@@ -20,6 +20,8 @@ public class JsonBean implements Serializable {
 	private List<ErrorBean> errors = new ArrayList<ErrorBean>();
 
 	private boolean success;
+	
+	private String token;
 
 	@JsonProperty("errors")
 	public List<ErrorBean> getErrors() {
@@ -39,6 +41,16 @@ public class JsonBean implements Serializable {
 	@JsonIgnore
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	@JsonIgnore
+	public String getToken() {
+		return token;
+	}
+
+	@JsonProperty("token")
+	public void setToken(String token) {
+		this.token = token;
 	}
 	
 }

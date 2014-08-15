@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-public class CityEntity implements Serializable{
+public class AreaEntity implements Serializable{
 
 	/**
 	 * 
