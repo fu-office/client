@@ -6,7 +6,7 @@ import org.springframework.data.repository.Repository;
 
 import com.lbyt.client.entity.ClientEntity;
 
-public interface ClientDao extends Repository<ClientEntity, Integer>{
+public interface IClientDao extends Repository<ClientEntity, Integer>{
 
 	void save(ClientEntity client);
 	

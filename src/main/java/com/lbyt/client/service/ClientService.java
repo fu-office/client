@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lbyt.client.bean.Client;
 import com.lbyt.client.bean.ClientSearchBean;
-import com.lbyt.client.dao.ClientDao;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.error.ErrorBean;
+import com.lbyt.client.persistservice.ClientPersistService;
 import com.lbyt.client.util.BeanUtil;
 import com.lbyt.client.util.DateUtil;
 import com.lbyt.client.util.ExcelUtil;
@@ -67,8 +67,8 @@ public class ClientService {
 	private int shop_name_index = -1;
 	
 	@Autowired
-	private ClientDao clientDao;
-	 
+	ClientPersistService clientPersistService;
+	
 	public ClientSearchBean importExcel(MultipartFile file){
 		ClientSearchBean jsonBean = new ClientSearchBean();
 		jsonBean.setSuccess(false);
