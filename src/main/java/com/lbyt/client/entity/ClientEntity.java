@@ -16,7 +16,7 @@ public class ClientEntity implements Serializable{
 
 	@Id
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "card_no")
 	private String cardNum;
@@ -54,11 +54,11 @@ public class ClientEntity implements Serializable{
 	@Column(name = "remark")
 	private String remark;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

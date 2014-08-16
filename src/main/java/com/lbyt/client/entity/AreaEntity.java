@@ -16,7 +16,7 @@ public class AreaEntity implements Serializable{
 
 	@Id
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "long_name")
 	private String detail;
@@ -30,11 +30,11 @@ public class AreaEntity implements Serializable{
 	@Column(name = "create_date")
 	private Date date;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

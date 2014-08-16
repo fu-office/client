@@ -103,7 +103,7 @@ public class ClientService {
 			}
 		} catch (IOException e) {
 			ErrorBean error = new ErrorBean();
-			error.setErrorMessage("文件读取失败");
+			error.setErrorMessage("文件读取失败，请确保文件内容");
 			jsonBean.getErrors().add(error);
 			jsonBean.setSuccess(false);
 		}
