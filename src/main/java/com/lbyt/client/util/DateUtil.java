@@ -3,6 +3,7 @@ package com.lbyt.client.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
  *
  */
 public class DateUtil {
+	
 	public static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public static final DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -34,7 +36,7 @@ public class DateUtil {
 		} else if (dateTimePattern.matcher(str).matches()) {
 			return dateTimeFormat.parse(str);
 		}
-		return new Date();
+		return null;
 	}
 	
 	public static String date2String(){
@@ -68,6 +70,21 @@ public class DateUtil {
 	 */
 	public static String dateTime2String(Date date){
 		return dateTimeFormat.format(date);
+	}
+	
+	public static Date parseDate(String str) throws ParseException {
+		if (null == str) {
+			return null;
+		}
+		Calendar calendar = Calendar.getInstance();
+		str = str.trim();
+		str = str.replaceAll("年", "-");
+		str = str.replaceAll("月", "-");
+		str = str.replaceAll("日", "");
+		str = str.replaceAll(".", "-");
+		str = str.replaceAll("/", "-");
+		str = str.length() > 8 ? str : (calendar.get(Calendar.YEAR) + "-" + str); 
+		return string2Date(str);
 	}
 	
 }
