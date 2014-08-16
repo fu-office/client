@@ -3,43 +3,62 @@ package com.lbyt.client.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "lbyt_client")
 public class ClientEntity implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4417093805657707087L;
 
-	private String id;
+	@Id
+	@Column(name = "id")
+	private int id;
 	
+	@Column(name = "card_no")
+	private String cardNum;
+	
+	@Column(name = "modify_date")
 	private Date modifyDate;
 	
+	@Column(name = "address")
 	private String address;
 	
+	@Column(name = "client_name")
 	private String name;
 	
+	@Column(name = "phone_number")
 	private String phoneNumber;
 	
+	@Column(name = "tel_number")
 	private String telNumber;
 	
+	@Column(name = "post_code")
 	private String postCode;
 	
+	@Column(name = "birthday")
 	private Date birthday;
 	
+	@Column(name = "province")
 	private String province;
 	
+	@Column(name = "city")
 	private String city;
 	
+	@Column(name = "shop_name")
 	private String shopName;
 	
+	@Column(name = "remark")
 	private String remark;
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -129,6 +148,14 @@ public class ClientEntity implements Serializable{
 
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
+	}
+
+	public String getCardNum() {
+		return cardNum;
+	}
+
+	public void setCardNum(String cardNum) {
+		this.cardNum = cardNum;
 	}
 	
 }

@@ -3,6 +3,7 @@ package com.lbyt.client.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class ExcelUtil {
 	
 	public static List<Sheet> parseExcel(File file) throws IOException{
 		FileInputStream in = new FileInputStream(file);
+		HSSFWorkbook wb = new HSSFWorkbook(in);
+		return bulidExcel(wb);
+	}
+	
+	public static List<Sheet> parseExcel(InputStream in) throws IOException{
 		HSSFWorkbook wb = new HSSFWorkbook(in);
 		return bulidExcel(wb);
 	}
@@ -119,6 +125,10 @@ public class ExcelUtil {
 				return this.list.get(i);
 			} 
 			return null;
+		}
+		
+		public int getLastNumber() {
+			return this.lastRowNum;
 		}
 	}
 	

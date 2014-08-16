@@ -20,7 +20,7 @@ public class CharsetFilter extends OncePerRequestFilter{
         response.setCharacterEncoding("UTF-8");
         //缓存request对象
         HttpContextHolder.setRequest(request);
-        //缓存response对象
+//        //缓存response对象
         HttpContextHolder.setResponse(response);
         //调用service
         filterChain.doFilter(request, response);
