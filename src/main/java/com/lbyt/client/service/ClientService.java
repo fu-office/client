@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lbyt.client.bean.Client;
+import com.lbyt.client.bean.ClientBean;
 import com.lbyt.client.bean.ClientSearchBean;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.error.ErrorBean;
@@ -104,7 +104,7 @@ public class ClientService {
 			jsonBean.setSuccess(true);
 		} catch (IOException e) {
 			ErrorBean error = new ErrorBean();
-			error.setErrorMessage("文件读取失败，请确保文件内容");
+			error.setMessage("文件读取失败，请确保文件内容");
 			jsonBean.getErrors().add(error);
 			jsonBean.setSuccess(false);
 		}
@@ -156,11 +156,11 @@ public class ClientService {
 		}
 	}
 	
-	private List<Client> bulidClientList(List<ClientEntity> entities) {
-		List<Client> list = new ArrayList<Client>();
+	private List<ClientBean> bulidClientList(List<ClientEntity> entities) {
+		List<ClientBean> list = new ArrayList<ClientBean>();
 		for (ClientEntity e : entities) {
 			try {
-				list.add((Client) BeanUtil.bulidBean(new Client(), e));
+				list.add((ClientBean) BeanUtil.bulidBean(new ClientBean(), e));
 			} catch (IllegalAccessException | SecurityException
 					| ClassNotFoundException | NoSuchMethodException
 					| InvocationTargetException e1) {

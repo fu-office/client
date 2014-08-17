@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -16,6 +18,7 @@ public class AreaEntity implements Serializable{
 
 	@Id
 	@Column(name = "id")
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 	
 	@Column(name = "long_name")
@@ -29,6 +32,9 @@ public class AreaEntity implements Serializable{
 	
 	@Column(name = "create_date")
 	private Date date;
+	
+	@Column(name = "shop_state")
+	private String shopState;
 
 	public Integer getId() {
 		return id;
@@ -68,6 +74,14 @@ public class AreaEntity implements Serializable{
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getShopState() {
+		return shopState;
+	}
+
+	public void setShopState(String shopState) {
+		this.shopState = shopState;
 	}
 	
 }

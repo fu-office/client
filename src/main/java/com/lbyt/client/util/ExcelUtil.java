@@ -92,7 +92,7 @@ public class ExcelUtil {
 							values[j] = new Cell(cell.getStringCellValue(), Cell.CELL_STRING);
 							break;
 						case HSSFCell.CELL_TYPE_NUMERIC :
-							values[j] = new Cell(String.valueOf(cell.getNumericCellValue()), Cell.CELL_NUMERIC);
+							values[j] = new Cell("" + (long)cell.getNumericCellValue(), Cell.CELL_NUMERIC);
 							break;
 						default :
 							values[j] = new Cell(null, Cell.CELL_NULL);

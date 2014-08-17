@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class Client extends  JsonBean{
+public class ClientBean extends  JsonBean{
 
 	/**
 	 * 
