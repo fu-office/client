@@ -20,6 +20,8 @@ public class AreaSearchBean extends BaseSearchBean {
 	
 	private String detail;
 	
+	private String shopState;
+	
 	public String getProv() {
 		return prov;
 	}
@@ -69,6 +71,14 @@ public class AreaSearchBean extends BaseSearchBean {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getShopState() {
+		return shopState;
+	}
+
+	public void setShopState(String shopState) {
+		this.shopState = shopState;
 	}
 	
 }

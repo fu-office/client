@@ -9,6 +9,8 @@ public interface IGiftDao extends Repository<GiftEntity, Integer>{
 	GiftEntity save(GiftEntity entity);
 
 	void delete(GiftEntity entity);
+
+	GiftEntity findByPhone(String phone);
 	
 }
 

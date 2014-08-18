@@ -1,7 +1,12 @@
 package com.lbyt.client.controller;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -9,8 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.lbyt.client.bean.AreaBean;
 import com.lbyt.client.bean.AreaImportBean;
 import com.lbyt.client.bean.AreaSearchBean;
+import com.lbyt.client.bean.ExcelOutputJsonBean;
 import com.lbyt.client.bean.JsonBean;
+import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.service.AreaService;
+import com.lbyt.client.util.ExcelUtil;
 
 @Controller
 @RequestMapping("/area")
@@ -25,28 +33,40 @@ public class AreaController {
 	}
 	
 	@RequestMapping("/export.json")
-	public JsonBean export(AreaBean area) {
-		return null;
+	@ResponseBody
+	public ExcelOutputJsonBean export(@RequestBody AreaSearchBean json, HttpServletResponse response) {
+		ExcelOutputJsonBean jsonBean = new ExcelOutputJsonBean();
+		jsonBean.getCells().addAll(areaService.getCells(json));
+		jsonBean.setSpreadHeads(areaService.getHeads());
+		jsonBean.setHeads(areaService.getHeads());
+		response.setContentType("application/msexcel");
+		try {
+			ExcelUtil.buildExcelFile(jsonBean.getBean(), jsonBean.getErrors(), response.getOutputStream());
+		} catch (IOException e) {
+			jsonBean.setSuccess(false);
+			ErrorBean error = new ErrorBean();
+			error.setMessage(e.getMessage());
+			jsonBean.getErrors().add(error);
+		}
+		return jsonBean;
 	}
 	
 	@RequestMapping("/search.json")
 	@ResponseBody
-	public AreaSearchBean search(AreaSearchBean json) {
-		
-		return null;
+	public AreaSearchBean search(@RequestBody AreaSearchBean json) {
+		return areaService.search(json);
 	}
 	
-	@RequestMapping("/update.json")
+	@RequestMapping("/saveOrUpdate.json")
 	@ResponseBody
-	public JsonBean update(AreaBean area) {
-		
-		return null;
+	public AreaBean saveOrUpdate(@RequestBody AreaBean area) {
+		return areaService.saveOrUpdate(area);
 	}
 	
-	@RequestMapping("/save.json")
+	@RequestMapping("/delete.json")
 	@ResponseBody
-	public AreaBean save(AreaBean area) {
-		return null;
+	public JsonBean delete(@RequestBody AreaBean area) {
+		return areaService.delete(area);
 	}
 	
 	@RequestMapping("/findAll.json")
@@ -55,5 +75,11 @@ public class AreaController {
 		AreaSearchBean json = new AreaSearchBean();
 		json.setList(areaService.findAll());
 		return json;
+	}
+	
+	@RequestMapping("/findById.json")
+	@ResponseBody
+	public AreaBean findById(@RequestBody AreaBean area) {
+		return areaService.findById(area);
 	}
 }

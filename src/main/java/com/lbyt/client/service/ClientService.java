@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lbyt.client.bean.ClientBean;
 import com.lbyt.client.bean.ClientSearchBean;
+import com.lbyt.client.constant.ClientConstants;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.persistservice.ClientPersistService;
@@ -24,7 +26,7 @@ import com.lbyt.client.util.ExcelUtil.Sheet;
 @Service
 public class ClientService {
 	
-	private static final String MODIFY_DATE = "登记日期";
+	private static final String REGIST_DATE = "登记日期";
 	
 	private static final String CARD_NO = "卡号";
 	
@@ -46,7 +48,7 @@ public class ClientService {
 	
 	private static final int CONTENT_START_INDEX = 1;
 	
-	private int modify_date_index = -1;
+	private int regist_date_index = -1;
 	
 	private int card_no_index = -1;
 	
@@ -73,6 +75,7 @@ public class ClientService {
 		ClientSearchBean jsonBean = new ClientSearchBean();
 		jsonBean.setSuccess(false);
 		List<ClientEntity> entities = new ArrayList<ClientEntity>();
+		Date modifyDate = new Date();
 		try {
 			List<Sheet> sheets = ExcelUtil.parseExcel(file.getInputStream());
 			for (Sheet st : sheets) {
@@ -95,8 +98,11 @@ public class ClientService {
 						entity.setBirthday(birthday_index == -1 || cells[birthday_index] == null  ? null : DateUtil.parseDate(cells[birthday_index].getValue()));
 					} catch (ParseException e) {}
 					try {
-						entity.setModifyDate(modify_date_index == -1 || cells[modify_date_index] == null  ? null : DateUtil.parseDate(cells[modify_date_index].getValue()));
+						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? null : DateUtil.parseDate(cells[regist_date_index].getValue()));
 					} catch (ParseException e) {}
+					entity.setModifyDate(modifyDate);
+					entity.setCardNum(generateCardNo());
+//					clientPersistService.save(entity);
 					entities.add(entity);
 				}
 			}
@@ -111,6 +117,62 @@ public class ClientService {
 		return jsonBean;
 	}
 	
+	public ClientBean findByCardNo(ClientBean bean){
+		ClientEntity entity = clientPersistService.findByCardNo(bulidEntity(bean));
+		return bulidBean(entity);
+	}
+	
+	public ClientSearchBean search(ClientBean bean){
+		List<ClientEntity> list = clientPersistService.search(bulidEntity(bean), bean.getShopState());
+		ClientSearchBean searchBean = new ClientSearchBean();
+		for (ClientEntity entity : list) {
+			searchBean.getList().add(bulidBean(entity));
+		}
+		searchBean.setSuccess(true);
+		return searchBean;
+	}
+	
+	public ClientBean save(ClientBean bean) {
+		return bean;
+	}
+	
+	private ClientEntity bulidEntity(ClientBean bean) {
+		ClientEntity entity = new ClientEntity();
+		entity.setAddress(bean.getAddress());
+		entity.setBirthday(bean.getBirthday());
+		entity.setCardNum(bean.getCardNum());
+		entity.setCity(bean.getCity());
+		entity.setId(bean.getId());
+		entity.setModifyDate(bean.getModifyDate());
+		entity.setName(bean.getName());
+		entity.setPhoneNumber(bean.getPhoneNumber());
+		entity.setPostCode(bean.getPostCode());
+		entity.setProvince(bean.getProvince());
+		entity.setRemark(bean.getRemark());
+		entity.setShopName(bean.getShopName());
+		entity.setTelNumber(bean.getTelNumber());
+		return entity;
+	}
+	
+	public ClientBean bulidBean(ClientEntity entity){
+		ClientBean bean = new ClientBean();
+		bean.setAddress(entity.getAddress());
+		bean.setBirthday(entity.getBirthday());
+		bean.setCardNum(entity.getCardNum());
+		bean.setCity(entity.getCity());
+		bean.setId(entity.getId());
+		bean.setModifyDate(entity.getModifyDate());
+		bean.setName(entity.getName());
+		bean.setPhoneNumber(entity.getPhoneNumber());
+		bean.setPostCode(entity.getPostCode());
+		bean.setProvince(entity.getProvince());
+		bean.setRegisterDate(entity.getRegisterDate());
+		bean.setRemark(entity.getRemark());
+		bean.setShopName(entity.getShopName());
+		bean.setTelNumber(entity.getTelNumber());
+		return bean;
+	}
+
 	private void restIndex() {
 		this.area_index = -1;
 		this.birthday_index = -1;
@@ -119,7 +181,7 @@ public class ClientService {
 		this.client_name_index = -1;
 		this.client_phone_index = -1;
 		this.client_tel_index = -1;
-		this.modify_date_index = -1;
+		this.regist_date_index = -1;
 		this.post_code_index = -1;
 		this.shop_name_index = -1;
 	}
@@ -131,8 +193,8 @@ public class ClientService {
 			String str = cell.getValue();
 			if  (str != null) {
 				str = str.replaceAll(" ", "");
-				if (MODIFY_DATE.equals(str)) {
-					this.modify_date_index = i;
+				if (REGIST_DATE.equals(str)) {
+					this.regist_date_index = i;
 				} else if (CARD_NO.equals(str)) {
 					this.card_no_index = i;
 				} else if (CLIENT_NAME.equals(str)) {
@@ -156,6 +218,19 @@ public class ClientService {
 		}
 	}
 	
+	private String generateCardNo(){
+		long timeStamp = (new Date()).getTime();
+		String time = String.valueOf(timeStamp);
+		time = time.substring(Math.max(time.length() - 10, 0));
+		String str = "";
+		int len = ClientConstants.TOKENS.length;
+		for (int i = 0; i < 6; i++) {
+			str += ClientConstants.TOKENS[(int) (Math.random() * len)];
+		}
+		str += time;
+		return str;
+	}
+	
 	private List<ClientBean> bulidClientList(List<ClientEntity> entities) {
 		List<ClientBean> list = new ArrayList<ClientBean>();
 		for (ClientEntity e : entities) {
@@ -169,4 +244,5 @@ public class ClientService {
 		}
 		return list;
 	}
+	
 }

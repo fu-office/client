@@ -25,4 +25,8 @@ public class ErrorBean extends JsonBean{
 		this.message = errorMessage;
 	}
 	
+	public static ErrorBean getInstance(){
+		return new ErrorBean();
+	}
+	
 }
