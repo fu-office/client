@@ -75,10 +75,12 @@ public class ExcelUtil {
 				}
 				mySheet = new Sheet();
 				lastRowNum = sheet.getLastRowNum();
+				int titleLength = sheet.getRow(0).getLastCellNum();
 				for (i = 0; i < lastRowNum; i++) {
 					row = sheet.getRow(i);
 					int columnNum = row.getLastCellNum(), j = 0;
-					values = new Cell[columnNum];
+					values = new Cell[titleLength];
+					columnNum = Math.min(columnNum, titleLength);
 					for (; j < columnNum; j ++) {
 						HSSFCell cell = row.getCell(j);
 						if (null == cell) {
@@ -90,10 +92,10 @@ public class ExcelUtil {
 							values[j] = new Cell(cell.getStringCellValue(), Cell.CELL_STRING);
 							break;
 						case HSSFCell.CELL_TYPE_NUMERIC :
-							values[j] = new Cell(String.valueOf(cell.getNumericCellValue()), Cell.CELL_NUMERIC);
+							values[j] = new Cell("" + (long)cell.getNumericCellValue(), Cell.CELL_NUMERIC);
 							break;
 						default :
-							values[j] = null;
+							values[j] = new Cell(null, Cell.CELL_NULL);
 							break;
 						}
 					}
@@ -136,6 +138,8 @@ public class ExcelUtil {
 		public static final int CELL_STRING = 1;
 		
 		public static final int CELL_NUMERIC = 2;
+		
+		public static final int CELL_NULL = -1;
 		
 		private String vlaue;
 		

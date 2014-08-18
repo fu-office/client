@@ -5,7 +5,7 @@ import com.lbyt.client.bean.JsonBean;
 public class ErrorBean extends JsonBean{
 	private static final long serialVersionUID = 1L;
 
-	private String errorMessage;
+	private String message;
 	
 	private String errorCode;
 
@@ -17,12 +17,12 @@ public class ErrorBean extends JsonBean{
 		this.errorCode = errorCode;
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+	public void setMessage(String errorMessage) {
+		this.message = errorMessage;
 	}
 	
 }

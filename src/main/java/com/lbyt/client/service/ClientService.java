@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lbyt.client.bean.Client;
+import com.lbyt.client.bean.ClientBean;
 import com.lbyt.client.bean.ClientSearchBean;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.error.ErrorBean;
@@ -83,27 +83,28 @@ public class ClientService {
 				for (int i = CONTENT_START_INDEX; i < last; i ++) {
 					Cell[] cells = st.getRow(i);
 					ClientEntity entity = new ClientEntity();
-					entity.setCardNum(this.card_no_index == -1 ? null : cells[this.card_no_index].getValue());
-					entity.setAddress(this.client_addr_index == -1 ? null : cells[this.client_addr_index].getValue());
-					entity.setCity(this.area_index == -1 ? null : cells[this.area_index].getValue());
-					entity.setPostCode(this.post_code_index == -1 ? null : cells[this.post_code_index].getValue());
-					entity.setName(this.client_name_index == -1 ? null : cells[this.client_name_index].getValue());
-					entity.setPhoneNumber(this.client_phone_index == -1 ? null : cells[this.client_phone_index].getValue());
-					entity.setTelNumber(this.client_tel_index == -1 ? null : cells[this.client_tel_index].getValue());
-					entity.setShopName(this.shop_name_index == -1 ? null : cells[this.shop_name_index].getValue());
+					entity.setCardNum(card_no_index == -1 || cells[card_no_index] == null ? null  :  cells[card_no_index].getValue());
+					entity.setAddress(client_addr_index == -1 || cells[client_addr_index] == null ? null : cells[client_addr_index].getValue());
+					entity.setCity(area_index == -1 || cells[area_index] == null ?  null : cells[area_index].getValue());
+					entity.setPostCode(post_code_index == -1 || cells[post_code_index] == null ? null : cells[post_code_index].getValue());
+					entity.setName(client_name_index == -1 || cells[client_name_index] == null ? null : cells[client_name_index].getValue());
+					entity.setPhoneNumber(client_phone_index == -1 || cells[client_phone_index] == null ? null : cells[client_phone_index].getValue());
+					entity.setTelNumber(client_tel_index == -1 || cells[client_tel_index] == null ? null : cells[client_tel_index].getValue());
+					entity.setShopName(shop_name_index == -1 || cells[shop_name_index] == null  ? null : cells[shop_name_index].getValue());
 					try {
-						entity.setBirthday(this.birthday_index == -1 ? null : DateUtil.parseDate(cells[this.birthday_index].getValue()));
+						entity.setBirthday(birthday_index == -1 || cells[birthday_index] == null  ? null : DateUtil.parseDate(cells[birthday_index].getValue()));
 					} catch (ParseException e) {}
 					try {
-						entity.setModifyDate(this.modify_date_index == -1 ? null : DateUtil.parseDate(cells[this.modify_date_index].getValue()));
+						entity.setModifyDate(modify_date_index == -1 || cells[modify_date_index] == null  ? null : DateUtil.parseDate(cells[modify_date_index].getValue()));
 					} catch (ParseException e) {}
 					entities.add(entity);
 				}
-				jsonBean.setList(bulidClientList(entities));
 			}
+			jsonBean.setList(bulidClientList(entities));
+			jsonBean.setSuccess(true);
 		} catch (IOException e) {
 			ErrorBean error = new ErrorBean();
-			error.setErrorMessage("文件读取失败，请确保文件内容");
+			error.setMessage("文件读取失败，请确保文件内容");
 			jsonBean.getErrors().add(error);
 			jsonBean.setSuccess(false);
 		}
@@ -128,35 +129,38 @@ public class ClientService {
 		for (; i < length; i++) {
 			Cell cell = cells[i];
 			String str = cell.getValue();
-			if (MODIFY_DATE.equals(str)) {
-				this.modify_date_index = i;
-			} else if (CARD_NO.equals(str)) {
-				this.card_no_index = i;
-			} else if (CLIENT_NAME.equals(str)) {
-				this.client_name_index = i;
-			} else if (CLIENT_PHONE.equals(str)) {
-				this.client_phone_index = i;
-			} else if (CLIENT_TEL.equals(str)) {
-				this.client_tel_index = i;
-			} else if (CLIENT_ADDR.equals(str)) {
-				this.client_addr_index = i;
-			} else if (POST_CODE.equals(str)) {
-				this.post_code_index = i;
-			} else if (BIRTHDAY.equals(str)) {
-				this.birthday_index = i;
-			} else if (AREA.equals(str)) {
-				this.area_index = i;
-			} else if (SHOP_NAME.equals(str)) {
-				this.shop_name_index = i;
-			}
+			if  (str != null) {
+				str = str.replaceAll(" ", "");
+				if (MODIFY_DATE.equals(str)) {
+					this.modify_date_index = i;
+				} else if (CARD_NO.equals(str)) {
+					this.card_no_index = i;
+				} else if (CLIENT_NAME.equals(str)) {
+					this.client_name_index = i;
+				} else if (CLIENT_PHONE.equals(str)) {
+					this.client_phone_index = i;
+				} else if (CLIENT_TEL.equals(str)) {
+					this.client_tel_index = i;
+				} else if (CLIENT_ADDR.equals(str)) {
+					this.client_addr_index = i;
+				} else if (POST_CODE.equals(str)) {
+					this.post_code_index = i;
+				} else if (BIRTHDAY.equals(str)) {
+					this.birthday_index = i;
+				} else if (AREA.equals(str)) {
+					this.area_index = i;
+				} else if (SHOP_NAME.equals(str)) {
+					this.shop_name_index = i;
+				}
+			} 
 		}
 	}
 	
-	private List<Client> bulidClientList(List<ClientEntity> entities) {
-		List<Client> list = new ArrayList<Client>();
+	private List<ClientBean> bulidClientList(List<ClientEntity> entities) {
+		List<ClientBean> list = new ArrayList<ClientBean>();
 		for (ClientEntity e : entities) {
 			try {
-				list.add((Client) BeanUtil.bulidBean(new Client(), e));
+				list.add((ClientBean) BeanUtil.bulidBean(new ClientBean(), e));
 			} catch (IllegalAccessException | SecurityException
 					| ClassNotFoundException | NoSuchMethodException
 					| InvocationTargetException e1) {

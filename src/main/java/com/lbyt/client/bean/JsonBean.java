@@ -18,7 +18,7 @@ public class JsonBean implements Serializable {
 	private static final long serialVersionUID = -7052655343120461443L;
 
 	private List<ErrorBean> errors = new ArrayList<ErrorBean>();
-
+	
 	private boolean success;
 	
 	private String token;
@@ -52,5 +52,5 @@ public class JsonBean implements Serializable {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
+
 }
