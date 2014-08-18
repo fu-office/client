@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFBorderFormatting;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFConditionalFormattingRule;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPatternFormatting;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -115,9 +116,18 @@ public class ExcelUtil {
 									Cell.CELL_STRING);
 							break;
 						case HSSFCell.CELL_TYPE_NUMERIC:
-							values[j] = new Cell(""
-									+ (long) cell.getNumericCellValue(),
-									Cell.CELL_NUMERIC);
+							if (HSSFDateUtil.isCellDateFormatted(cell)) {
+								Date date = cell.getDateCellValue();
+								if (date != null) {
+									values[j] = new Cell(DateUtil.date2String(date), Cell.CELL_STRING);
+								} else {
+									values[j] = new Cell("", Cell.CELL_NULL);
+								}
+							} else {
+								values[j] = new Cell(""
+										+ (long) cell.getNumericCellValue(),
+										Cell.CELL_NUMERIC);
+							}
 							break;
 						default:
 							values[j] = new Cell(null, Cell.CELL_NULL);
