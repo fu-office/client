@@ -27,6 +27,9 @@ public class ClientEntity implements Serializable{
 	@Column(name = "modify_date")
 	private Date modifyDate;
 	
+	@Column(name = "register_date")
+	private Date registerDate;
+	
 	@Column(name = "address")
 	private String address;
 	
@@ -160,5 +163,13 @@ public class ClientEntity implements Serializable{
 	public void setCardNum(String cardNum) {
 		this.cardNum = cardNum;
 	}
-	
+
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
+	}
+
 }

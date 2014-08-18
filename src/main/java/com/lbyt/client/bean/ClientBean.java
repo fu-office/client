@@ -15,7 +15,7 @@ public class ClientBean extends  JsonBean{
 	
 	private Date registerDate;
 	
-	private String id;
+	private Integer id;
 	
 	private String cardNum;
 	
@@ -38,12 +38,14 @@ public class ClientBean extends  JsonBean{
 	private String shopName;
 	
 	private String remark;
+	
+	private String shopState;
 
-	public String getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -151,6 +153,14 @@ public class ClientBean extends  JsonBean{
 
 	public void setCardNum(String cardNum) {
 		this.cardNum = cardNum;
+	}
+
+	public String getShopState() {
+		return shopState;
+	}
+
+	public void setShopState(String shopState) {
+		this.shopState = shopState;
 	}
 	
 }

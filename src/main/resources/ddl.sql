@@ -26,6 +26,7 @@ create table if not exists area(
 	long_name varchar(100) unique not null,
 	prov_name varchar(50) unique not null,
 	city_name varchar(50) not null,
+	shop_state varchar(30),
 	create_date date
 );
 

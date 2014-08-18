@@ -21,4 +21,6 @@
 	<!-- exception handler -->
 	<beans:bean id="exceptionResolver" class="com.lbyt.client.ExceptionResolver">
 	</beans:bean>
+	<!-- aop -->
+	<aop:aspectj-autoproxy />
 </beans>

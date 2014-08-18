@@ -7,7 +7,9 @@ import com.lbyt.client.bean.AreaBean;
 import com.lbyt.client.bean.GiftBean;
 import com.lbyt.client.entity.AreaEntity;
 import com.lbyt.client.entity.GiftEntity;
+import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.persistservice.GiftPersistService;
+import com.lbyt.client.util.CommUtil;
 import com.lbyt.client.util.ExcelUtil.Cell;
 
 @Service
@@ -28,12 +30,28 @@ public class GiftService {
 	@Autowired
 	private GiftPersistService giftPersist;
 	
-	
 	public GiftBean save(GiftBean gift) {
-		GiftEntity entity = bulidEntity(gift);
-		entity = giftPersist.save(entity);
-		gift.setId(entity.getId());
-		gift.setSuccess(true);
+		String name = gift.getName();
+		String phone = gift.getPhone();
+		if (CommUtil.isEmpty(phone) || CommUtil.isEmpty(name)) {
+			gift.setSuccess(false);
+			ErrorBean e = new ErrorBean();
+			e.setMessage("姓名和电话不能为空");
+			gift.getErrors().add(e);
+		} else {
+			GiftEntity entity = bulidEntity(gift);
+			GiftEntity storeEntity = giftPersist.findByPhone(entity.getPhone());
+			if (storeEntity != null && storeEntity.getId() != null) {
+				gift.setSuccess(false);
+				ErrorBean e = new ErrorBean();
+				e.setMessage("该联系电话已存在");
+				gift.getErrors().add(e);
+			} else {
+				entity = giftPersist.save(entity);
+				gift.setId(entity.getId());
+				gift.setSuccess(true);
+			}
+		}
 		return gift;
 	}
 	

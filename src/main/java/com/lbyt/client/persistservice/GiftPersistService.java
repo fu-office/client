@@ -32,4 +32,8 @@ public class GiftPersistService {
 		giftDao.delete(entity);
 	}
 	
+	public GiftEntity findByPhone(String phone) {
+		return giftDao.findByPhone(phone);
+	}
+	
 }
