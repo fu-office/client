@@ -9,11 +9,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lbyt.client.bean.PageBean;
 import com.lbyt.client.constant.ClientConstants;
 import com.lbyt.client.dao.IClientDao;
 import com.lbyt.client.entity.AreaEntity;
@@ -34,11 +39,16 @@ public class ClientPersistService {
 	}
 	
 	@Transactional
+	public void delete(ClientEntity entity) {
+		clientDao.delete(entity);
+	}
+	
+	@Transactional
 	public ClientEntity save(ClientEntity entity) {
 		return clientDao.save(entity);
 	}
 
-	public List<ClientEntity> search(final ClientEntity entity, final String shopState) {
+	public Page<ClientEntity> search(final ClientEntity entity, final String shopState, final PageBean page) {
 		return clientDao.findAll(new Specification<AreaEntity>(){
 
 			@Override
@@ -65,11 +75,16 @@ public class ClientPersistService {
 				return predicate;
 			}
 			
-		});
+		}, new PageRequest(page.getPageNumber() - 1, page.getPageSize(), new Sort(Direction.DESC,
+				ClientEntity.REGIST_DATE)));
 	}
 
 	public ClientEntity findByCardNo(ClientEntity entity) {
 		return clientDao.findByCardNo(entity.getCardNum());
+	}
+
+	public ClientEntity findById(Integer id) {
+		return clientDao.findById(id);
 	}
 	
 }

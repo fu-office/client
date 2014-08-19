@@ -17,9 +17,9 @@ public class DateUtil {
 	
 	public static final DateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 	
-	public static final Pattern datePattern =  Pattern.compile("^\\d{4}-\\d{1,2}\\d{1,2}$");  // yyyy-MM-dd
+	public static final Pattern datePattern =  Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}$");  // yyyy-MM-dd
 	
-	public static final Pattern dateTimePattern = Pattern.compile("^\\d{4}-\\d{1,2}\\d{1,2} \\d{1,2}:\\d{1,2}(:\\d{1,2})?$"); // yyyy-MM-dd hh:mm:ss
+	public static final Pattern dateTimePattern = Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2} \\d{1,2}:\\d{1,2}(:\\d{1,2})?$"); // yyyy-MM-dd hh:mm:ss
 	
 	/**
 	 *  parse string to date, as the pattern which it matched
@@ -78,11 +78,11 @@ public class DateUtil {
 		}
 		Calendar calendar = Calendar.getInstance();
 		str = str.trim();
-		str = str.replaceAll("年", "-");
-		str = str.replaceAll("月", "-");
-		str = str.replaceAll("日", "");
-		str = str.replaceAll(".", "-");
-		str = str.replaceAll("/", "-");
+		str = str.replace("年", "-");
+		str = str.replace("月", "-");
+		str = str.replace("日", "");
+		str = str.replace(".", "-");
+		str = str.replace("/", "-");
 		str = str.length() > 8 ? str : (calendar.get(Calendar.YEAR) + "-" + str); 
 		return string2Date(str);
 	}

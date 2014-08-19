@@ -1,16 +1,28 @@
 package com.lbyt.client.service;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lbyt.client.bean.AreaBean;
 import com.lbyt.client.bean.GiftBean;
+import com.lbyt.client.bean.GiftSearchBean;
+import com.lbyt.client.bean.JsonBean;
+import com.lbyt.client.bean.PageBean;
 import com.lbyt.client.entity.AreaEntity;
 import com.lbyt.client.entity.GiftEntity;
 import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.persistservice.GiftPersistService;
 import com.lbyt.client.util.CommUtil;
+import com.lbyt.client.util.DateUtil;
+import com.lbyt.client.util.ExcelUtil;
 import com.lbyt.client.util.ExcelUtil.Cell;
+import com.lbyt.client.util.ExcelUtil.Sheet;
 
 @Service
 public class GiftService {
@@ -23,9 +35,13 @@ public class GiftService {
 	
 	private static final String CLIENT_PHONE = "电话";
 	
+	private static final String CLIENT_DATE = "登记日期";
+	
 	private int name_index = -1;
 	
 	private int phone_index = -1;
+	
+	private int date_index = -1;
 	
 	@Autowired
 	private GiftPersistService giftPersist;
@@ -55,6 +71,60 @@ public class GiftService {
 		return gift;
 	}
 	
+	public GiftSearchBean importExcel(MultipartFile file) {
+		GiftSearchBean json = new GiftSearchBean();
+		try {
+			List<Sheet> sheets = ExcelUtil.parseExcel(file.getInputStream());
+			for (Sheet sheet : sheets) {
+				int lastRowIndex = sheet.getLastNumber(),
+					i = CONTENT_START_INDEX;
+				Cell[] title = sheet.getRow(HEAD_TITLE_INDEX);
+				setCellIndex(title);
+				for (; i < lastRowIndex; i ++) {
+					Cell[] row = sheet.getRow(i);
+					GiftBean giftBean = new GiftBean();
+					giftBean.setName(name_index == -1 || row[name_index] == null ? null : row[name_index].getValue());
+					giftBean.setPhone(phone_index == -1 || row[phone_index] == null ? null : row[phone_index].getValue());
+					try {
+						giftBean.setDate(date_index == -1 || row[date_index] == null ? null : DateUtil.parseDate(row[date_index].getValue()));
+					} catch (ParseException e) {}
+					save(giftBean);
+				}
+			}
+			json.setSuccess(true);
+		} catch (IOException e) {
+			ErrorBean err = new ErrorBean();
+			err.setMessage(e.getMessage());
+			json.getErrors().add(err);
+			json.setSuccess(false);
+		}
+		return json;
+	}
+	
+	public JsonBean delete(GiftBean gift) {
+		JsonBean json = new JsonBean();
+		giftPersist.delete(bulidEntity(gift));
+		json.setSuccess(true);
+		return json;
+	}
+	
+	public GiftSearchBean search(GiftSearchBean bean) {
+		PageBean page = new PageBean();
+		page.setPageNumber(bean.getPageNumber());
+		page.setPageSize(bean.getPageSize());
+		Page<GiftEntity> pageEntities = giftPersist.findByStartDateAndEndDate(bean.getStartDate(), bean.getEndDate(), page);
+		List<GiftEntity> list = pageEntities.getContent();
+		for (GiftEntity entity : list) {
+			bean.getList().add(bulidBean(entity));
+		}
+		bean.setCount(pageEntities.getTotalElements());
+		bean.setPageNumber(pageEntities.getNumber() + 1);
+		bean.setPageSize(pageEntities.getSize());
+		bean.setTotalPages(pageEntities.getTotalPages());
+		bean.setSuccess(true);
+		return bean;
+	}
+	
 	private GiftEntity bulidEntity (GiftBean gift) {
 		GiftEntity entity = new GiftEntity();
 		entity.setClientId(gift.getClientId());
@@ -65,13 +135,13 @@ public class GiftService {
 		return entity;
 	}
 	
-	public AreaBean bulidBean(AreaEntity entity) {
-		AreaBean bean = new AreaBean();
-		bean.setCity(entity.getCity());
+	private GiftBean bulidBean(GiftEntity entity) {
+		GiftBean bean = new GiftBean();
 		bean.setDate(entity.getDate());
 		bean.setId(entity.getId());
-		bean.setDetail(entity.getDetail());
-		bean.setProv(entity.getProv());
+		bean.setClientId(entity.getClientId());
+		bean.setName(entity.getName());
+		bean.setPhone(entity.getPhone());
 		return bean;
 	}
 	
@@ -80,7 +150,14 @@ public class GiftService {
 		for (; i < length; i ++) {
 			Cell cell = cells[i];
 			if (cell != null && cell.getValue() != null) {
-				
+				String t = cell.getValue();
+				if (CLIENT_NAME.equals(t)) {
+					this.name_index = i;
+				} else if (CLIENT_DATE.equals(t)) {
+					this.date_index = i;
+				} else if (CLIENT_PHONE.equals(t)) {
+					this.phone_index = i;
+				}
 			}
 		}
 	}
@@ -88,5 +165,8 @@ public class GiftService {
 	private void resetIndex(){
 		this.name_index = -1;
 		this.phone_index = -1;
+		this.date_index = -1;
 	}
+
+
 }

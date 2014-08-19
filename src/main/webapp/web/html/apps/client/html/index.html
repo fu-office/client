@@ -19,19 +19,26 @@
 					<div class="fm-row">
 						<div>
 							<label class="fm-lb">省份：</label>
-							<select id="province" class="ht-select"></select>
+							<select id="province" name="province" class="ht-select"></select>
 						</div>
 						<div>
 							<label class="fm-lb">城市：</label>
-							<select id="city" class="ht-select"></select>
+							<select id="city" class="ht-select" name="city"></select>
 						</div>
 						<div>
-							<label class="fm-lb">客户姓名:</label>
-							<input type="text" name="" />
+							<label class="fm-lb">专柜状态:</label>
+							<select class="ht-select" name="shopState">
+								<option value="">所有</option>
+								<option value="有专柜">有专柜</option>
+								<option value="无专柜">无专柜</option>
+							</select>
 						</div>
 						<div class="btn-grp">
 							<button class="btn search">
 								<i class="icon-search"></i> 搜索
+							</button>
+							<button class="btn add">
+								<i class="icon-plus"></i> 新增
 							</button>
 							<input type="file" id="client-excel" class="hide" />
 							<button class="btn import">
@@ -47,8 +54,12 @@
 				<div class="tab-cons hide" id="gift">
 					<div class="fm-row">
 						<div>
-							<label class="fm-lb">日期：</label>
-							<input type="text" class="date" id="gift_date_search"/>							
+							<label class="fm-lb">开始日期：</label>
+							<input type="text" class="date" name="startDate" id="gift_start_date"/>							
+						</div>
+						<div>
+							<label class="fm-lb">结束日期：</label>
+							<input type="text" class="date" name="endDate" id="gift_end_date"/>							
 						</div>
 						<div class="btn-grp">
 							<button class="btn search">
@@ -111,6 +122,7 @@
 				<div>
 					<label class="fm-lb">姓名</label>
 					<input type="text" name="name" />
+					<input type="hidden" name="id" />
 				</div>
 				<div>
 					<label class="fm-lb">联系电话</label>
@@ -144,6 +156,20 @@
 						<option value="有专柜">有专柜</option>
 						<option value="无专柜">无专柜</option>
 					</select>
+				</div>
+			</div>
+			<div class="btn-grp align-center">
+				<button class="btn submit-update">
+					提交
+				</button>
+			</div>
+		</div>
+		<div id="client_add_dialog" class="hide">
+			<div class="fm-row">
+				<div>
+					<label class="fm-lb"></label>
+					<input type="text" name=""/>
+					<input type="hidden" name="id">
 				</div>
 			</div>
 			<div class="btn-grp align-center">

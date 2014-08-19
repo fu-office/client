@@ -24,7 +24,7 @@ drop table if exists area;
 create table if not exists area(
 	id int unsigned primary key auto_increment,
 	long_name varchar(100) unique not null,
-	prov_name varchar(50) unique not null,
+	prov_name varchar(50) not null,
 	city_name varchar(50) not null,
 	shop_state varchar(30),
 	create_date date
@@ -35,7 +35,7 @@ drop table if exists gifts;
 create table gifts(
 	id int unsigned primary key auto_increment,
 	c_id int,
-	phone varchar(20),
+	phone varchar(20) unique,
 	c_name varchar(40),
 	c_date date
 );

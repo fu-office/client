@@ -74,6 +74,7 @@ public class AreaController {
 	public AreaSearchBean findAll() {
 		AreaSearchBean json = new AreaSearchBean();
 		json.setList(areaService.findAll());
+		json.setSuccess(true);
 		return json;
 	}
 	

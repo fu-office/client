@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,6 +13,7 @@ import com.lbyt.client.bean.ClientBean;
 import com.lbyt.client.bean.ClientSearchBean;
 import com.lbyt.client.bean.CustomerImportJsonBean;
 import com.lbyt.client.bean.ExcelOutputJsonBean;
+import com.lbyt.client.bean.JsonBean;
 import com.lbyt.client.service.ClientService;
 
 @Controller
@@ -29,20 +31,24 @@ public class ClientController {
 	
 	@RequestMapping("/export.json")
 	@ResponseBody
-	public ExcelOutputJsonBean export(ClientSearchBean bean){
+	public ExcelOutputJsonBean export(@RequestBody ClientSearchBean bean){
 		
 		return null;
 	}
 	
 	@RequestMapping("/search.json")
 	@ResponseBody
-	public ClientSearchBean search(ClientBean bean) {
+	public ClientSearchBean search(@RequestBody ClientSearchBean bean) {
 		return clientService.search(bean);
 	}
 	
 	@RequestMapping("/deleteById.json")
 	@ResponseBody
-	public ClientBean delete(ClientBean bean) {
-		return null;
+	public JsonBean delete(@RequestBody ClientBean bean) {
+		return clientService.delete(bean);
+	}
+	
+	public ClientBean save(@RequestBody ClientBean bean) {
+		return clientService.save(bean);
 	}
 }

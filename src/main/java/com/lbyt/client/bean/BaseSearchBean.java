@@ -1,14 +1,18 @@
 package com.lbyt.client.bean;
 
+import com.lbyt.client.constant.CommConstants;
+
 public class BaseSearchBean extends JsonBean {
 
 	private static final long serialVersionUID = 2681443461936932034L;
 
-	private int pageSize;
+	private int pageSize = CommConstants.PAGE_SIZE;
 	
-	private int pageNumer;
+	private int pageNumber = CommConstants.PAGE_NUMBER;
 	
-	private int count;
+	private int totalPages;
+	
+	private long count;
 
 	public int getPageSize() {
 		return pageSize;
@@ -18,20 +22,28 @@ public class BaseSearchBean extends JsonBean {
 		this.pageSize = pageSize;
 	}
 
-	public int getPageNumer() {
-		return pageNumer;
+	public int getPageNumber() {
+		return pageNumber;
 	}
 
-	public void setPageNumer(int pageNumer) {
-		this.pageNumer = pageNumer;
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
 	}
 
-	public int getCount() {
+	public long getCount() {
 		return count;
 	}
 
-	public void setCount(int count) {
+	public void setCount(long count) {
 		this.count = count;
+	}
+
+	public int getTotalPages() {
+		return totalPages;
+	}
+
+	public void setTotalPages(int totalPages) {
+		this.totalPages = totalPages;
 	}
 	
 }

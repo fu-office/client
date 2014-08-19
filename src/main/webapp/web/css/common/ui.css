@@ -720,7 +720,7 @@
 	margin: 3px 5px;
 }
 
-.tb-pg-select,.tb-pg-page,.tb-pg-btn {
+.tb-pg-select,.tb-pg-page,.tb-pg-btn,.tb-pg-count {
 	padding: 3px 0;
 	height: 24px;
 	line-height: 24px;
@@ -734,7 +734,7 @@
 }
 
 .tb-pg-page input {
-	width: 25px;
+	width: 40px;
 	margin: 0 2px;
 	text-align: center;
 }
