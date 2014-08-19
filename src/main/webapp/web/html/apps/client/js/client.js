@@ -13,6 +13,7 @@
 		 CLIENT_IMPORT : "customer/import.json",
 		 CLIENT_SEARCH : "customer/search.json",
 		 CLIENT_DELETE : "customer/deleteById.json",
+		 CLIENT_SAVE : "customer/save.json",
 		 AREA_IMPORT : "area/import.json",
 		 AREA_EXPORT : "area/export.json",
 		 AREA_SEARCH : "area/search.json",
@@ -89,6 +90,13 @@
 							}
 						});
 						$("#province").select("trigger");
+						$("#client_add_prov").select("destroy").select({
+							data : provMap,
+							after : function(opt){
+								$("#client_add_city").select("data", areaMap[opt.val] || {});
+							}
+						});
+						$("#client_add_prov").select("trigger");
 					}
 				});
 			},
@@ -99,6 +107,15 @@
 					success : function(d){
 						$.msg("删除成功");
 						fn && fn(d);
+					}
+				});
+			},
+			save : function(data){
+				$.ajaxJSON({
+					url : URL.CLIENT_SAVE,
+					data : data,
+					success : function(d){
+						$.msg("保存成功");
 					}
 				});
 			},
@@ -158,12 +175,17 @@
 					});
 					$("#client-excel").val("");
 				});
-				$("#client_add_dialog").dialog({
+				var $dialog = $("#client_add_dialog");
+				$dialog.dialog({
 					width : 400,
 					height : "auto",
 					autoOpen : false,
 					title : "",
 					modal : true
+				}).find(".submit-update").click(function(){
+					if ($dialog.checkRequired()) {
+						_self.save($dialog.f2j());
+					}
 				});
 			}
 	},
