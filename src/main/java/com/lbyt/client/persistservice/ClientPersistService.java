@@ -1,5 +1,7 @@
 package com.lbyt.client.persistservice;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lbyt.client.bean.PageBean;
 import com.lbyt.client.constant.ClientConstants;
+import com.lbyt.client.constant.CommConstants;
 import com.lbyt.client.dao.IClientDao;
-import com.lbyt.client.entity.AreaEntity;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.util.CommUtil;
 
@@ -50,10 +52,10 @@ public class ClientPersistService {
 
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public Page<ClientEntity> search(final ClientEntity entity, final String shopState, final PageBean page) {
-		return clientDao.findAll(new Specification<AreaEntity>(){
+		return clientDao.findAll(new Specification<ClientEntity>(){
 
 			@Override
-			public Predicate toPredicate(Root<AreaEntity> root,
+			public Predicate toPredicate(Root<ClientEntity> root,
 					CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Path<String> prov = root.get("province");
 				Path<String> city = root.get("city");
@@ -87,10 +89,10 @@ public class ClientPersistService {
 	
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<ClientEntity> findAll(final ClientEntity entity, final String shopState){
-		return clientDao.findAll(new Specification<AreaEntity>(){
+		return clientDao.findAll(new Specification<ClientEntity>(){
 
 			@Override
-			public Predicate toPredicate(Root<AreaEntity> root,
+			public Predicate toPredicate(Root<ClientEntity> root,
 					CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Path<String> prov = root.get("province");
 				Path<String> city = root.get("city");
@@ -133,6 +135,16 @@ public class ClientPersistService {
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public ClientEntity findById(Integer id) {
 		return clientDao.findById(id);
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ClientEntity> getMonthBirthday() {
+		Date today = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(today);
+		calendar.add(Calendar.DATE, CommConstants.MONTH);
+		Date todayAfterMonth = calendar.getTime();
+		return clientDao.findRecentBirthday(today, todayAfterMonth);
 	}
 	
 }

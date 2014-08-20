@@ -115,7 +115,7 @@ public class ClientService {
 					} catch (ParseException e) {}
 					entity.setModifyDate(modifyDate);
 					entity.setCardNum(generateCardNo());
-//					clientPersistService.save(entity);
+					clientPersistService.save(entity);
 					entities.add(entity);
 				}
 			}
@@ -206,6 +206,18 @@ public class ClientService {
 		searchBean.setPageSize(pageEntity.getSize());
 		searchBean.setTotalPages(pageEntity.getTotalPages());
 		return searchBean;
+	}
+	
+	public ClientSearchBean getMonthBirthday() {
+		List<ClientEntity> entities = clientPersistService.getMonthBirthday();
+		List<ClientBean> list = new ArrayList<ClientBean>();
+		for (ClientEntity entity : entities) {
+			list.add(bulidBean(entity));
+		}
+		ClientSearchBean json = new ClientSearchBean();
+		json.setSuccess(true);
+		json.setList(list);
+		return json;
 	}
 	
 	public ClientBean save(ClientBean bean) throws Exception {

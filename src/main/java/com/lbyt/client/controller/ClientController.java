@@ -69,4 +69,10 @@ public class ClientController {
 	public ClientBean save(@RequestBody ClientBean bean) throws Exception {
 		return clientService.save(bean);
 	}
+	
+	@RequestMapping("/birthday.json")
+	@ResponseBody
+	public ClientSearchBean recentBirthday() {
+		return clientService.getMonthBirthday();
+	}
 }

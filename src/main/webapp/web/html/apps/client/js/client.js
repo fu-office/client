@@ -15,6 +15,7 @@
 		 CLIENT_DELETE : "customer/deleteById.json",
 		 CLIENT_SAVE : "customer/save.json",
 		 CLIENT_EXPORT : "customer/export.json",
+		 CLIENT_BIRTHDAY : "customer/birthday.json",
 		 AREA_IMPORT : "area/import.json",
 		 AREA_EXPORT : "area/export.json",
 		 AREA_SEARCH : "area/search.json",
@@ -37,18 +38,18 @@
 					single : true,
 					height : 400,
 					columns : [{title:"编号",field:"id",width:80},
-					{title : "登记日期", field : "registerDate",width:120, formatter : function(ui, data){
+					{title : "登记日期", field : "registerDate",width:100, formatter : function(ui, data){
 						return data.cell ? $.formatDate(new Date(data.cell), "yyyy-MM-dd") : "";
 					}},
 					{title : "卡号", field : "cardNum",width:150},
 					{title : "姓名", field : "name",width:120},
 					{title : "手机号", field : "phoneNumber",width:120},
 					{title : "电话", field : "telNumber",width:120},
-					{title : "联系地址", field : "address",width:350},
-					{title : "邮编", field : "postCode",width:100},
 					{title : "生日", field : "birthday",width:120, formatter : function(ui, data){
 						return data.cell ? $.formatDate(new Date(data.cell), "yyyy-MM-dd") : "";
 					}},
+					{title : "联系地址", field : "address",width:350},
+					{title : "邮编", field : "postCode",width:100},
 					{title : "区域", field : "prov-city",width:120,formatter : function(ui, data){
 						var row = data.row;
 						return row.province ? row.province + "-" + row.city : row.city; 
@@ -137,6 +138,16 @@
 					fileName : (data.province ? data.province : "") + (data.city ? data.city : "") + "客户名单.xls"
 				});
 			},
+			recentMonth : function(){
+				var _self = this;
+				$.ajaxJSON({
+					url : URL.CLIENT_BIRTHDAY,
+					data : {},
+					success : function(d){
+						_self.$m.find(".list").grid("loadData", {total : d.list.length, currentPage : 1, rows : d.list, pageSize : d.list.length});
+					}
+				});
+			},
 			_bindEvent : function(){
 				var $m = this.$m,
 					_self = this,
@@ -151,6 +162,8 @@
 						_self.exportExcel($m.f2j());
 					} else if ($this.is(".add")) {
 						_self.editDialog({});
+					} else if ($this.is(".mon_birthday")) {
+						_self.recentMonth();
 					}
 				});
 				$grid.on("click", "a", function(){
