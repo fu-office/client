@@ -8,16 +8,20 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.lbyt.client.bean.ClientBean;
 import com.lbyt.client.bean.ClientSearchBean;
+import com.lbyt.client.bean.JsonBean;
+import com.lbyt.client.bean.PageBean;
 import com.lbyt.client.constant.ClientConstants;
 import com.lbyt.client.entity.ClientEntity;
 import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.persistservice.ClientPersistService;
 import com.lbyt.client.util.BeanUtil;
+import com.lbyt.client.util.CommUtil;
 import com.lbyt.client.util.DateUtil;
 import com.lbyt.client.util.ExcelUtil;
 import com.lbyt.client.util.ExcelUtil.Cell;
@@ -42,7 +46,9 @@ public class ClientService {
 	
 	private static final String BIRTHDAY = "生日";
 	
-	private static final String AREA = "区域";
+	private static final String AREA = "区域市";
+	
+	private static final String PROVINCE = "区域省份";
 	
 	private static final String SHOP_NAME = "专柜名称";
 	
@@ -66,7 +72,13 @@ public class ClientService {
 	
 	private int area_index = -1;
 	
+	private int province_index = -1;
+	
 	private int shop_name_index = -1;
+	
+	private int saveTimes = 0;
+	
+	private int maxSaveTimes = 7;
 	
 	@Autowired
 	ClientPersistService clientPersistService;
@@ -89,6 +101,7 @@ public class ClientService {
 					entity.setCardNum(card_no_index == -1 || cells[card_no_index] == null ? null  :  cells[card_no_index].getValue());
 					entity.setAddress(client_addr_index == -1 || cells[client_addr_index] == null ? null : cells[client_addr_index].getValue());
 					entity.setCity(area_index == -1 || cells[area_index] == null ?  null : cells[area_index].getValue());
+					entity.setProvince(province_index == -1 || cells[province_index] == null ?  null : cells[province_index].getValue());
 					entity.setPostCode(post_code_index == -1 || cells[post_code_index] == null ? null : cells[post_code_index].getValue());
 					entity.setName(client_name_index == -1 || cells[client_name_index] == null ? null : cells[client_name_index].getValue());
 					entity.setPhoneNumber(client_phone_index == -1 || cells[client_phone_index] == null ? null : cells[client_phone_index].getValue());
@@ -98,7 +111,7 @@ public class ClientService {
 						entity.setBirthday(birthday_index == -1 || cells[birthday_index] == null  ? null : DateUtil.parseDate(cells[birthday_index].getValue()));
 					} catch (ParseException e) {}
 					try {
-						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? null : DateUtil.parseDate(cells[regist_date_index].getValue()));
+						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? modifyDate : DateUtil.parseDate(cells[regist_date_index].getValue()));
 					} catch (ParseException e) {}
 					entity.setModifyDate(modifyDate);
 					entity.setCardNum(generateCardNo());
@@ -122,18 +135,125 @@ public class ClientService {
 		return bulidBean(entity);
 	}
 	
-	public ClientSearchBean search(ClientBean bean){
-		List<ClientEntity> list = clientPersistService.search(bulidEntity(bean), bean.getShopState());
+	public String[] getHeads() {
+		return new String[]{
+				REGIST_DATE,
+				CARD_NO,
+				CLIENT_NAME,
+				CLIENT_PHONE,
+				CLIENT_TEL,
+				CLIENT_ADDR,
+				POST_CODE,
+				BIRTHDAY,
+				PROVINCE,
+				AREA,
+				SHOP_NAME
+		};
+	}
+	
+	public List<List<Object>> getCells(ClientSearchBean bean){
+		List<List<Object>> list = new ArrayList<List<Object>>();
+		List<ClientEntity> entities = findAll(bean);
+		// order 
+		for (ClientEntity entity : entities) {
+			List<Object> row = new ArrayList<Object>();
+			row.add(DateUtil.date2String(entity.getRegisterDate()));
+			row.add(entity.getCardNum());
+			row.add(entity.getName());
+			row.add(entity.getPhoneNumber());
+			row.add(entity.getTelNumber());
+			row.add(entity.getAddress());
+			row.add(entity.getPostCode());
+			row.add(DateUtil.date2String(entity.getBirthday()));
+			row.add(entity.getProvince());
+			row.add(entity.getCity());
+			row.add(entity.getShopName());
+			list.add(row);
+		}
+		return list; 
+	}
+	
+	private List<ClientEntity> findAll(ClientSearchBean bean){
+		ClientBean client = new ClientBean();
+		client.setName(bean.getName());
+		client.setProvince(bean.getProvince());
+		client.setCity(bean.getCity());
+		return clientPersistService.findAll(bulidEntity(client), bean.getShopState());
+	}
+	
+	public ClientSearchBean search(ClientSearchBean bean){
+		PageBean page = new PageBean();
+		page.setPageNumber(bean.getPageNumber());
+		page.setPageSize(bean.getPageSize());
+		ClientBean client = new ClientBean();
+		client.setName(bean.getName());
+		client.setProvince(bean.getProvince());
+		client.setCity(bean.getCity());
+		client.setShopState(bean.getShopState());
+		return search(client, page);
+	}
+	
+	public ClientSearchBean search(ClientBean bean, PageBean page){
+		Page<ClientEntity> pageEntity = clientPersistService.search(bulidEntity(bean), bean.getShopState(), page);
+		List<ClientEntity> list = pageEntity.getContent();
 		ClientSearchBean searchBean = new ClientSearchBean();
 		for (ClientEntity entity : list) {
 			searchBean.getList().add(bulidBean(entity));
 		}
 		searchBean.setSuccess(true);
+		searchBean.setCount(pageEntity.getTotalElements());
+		searchBean.setPageNumber(pageEntity.getNumber() + 1);
+		searchBean.setPageSize(pageEntity.getSize());
+		searchBean.setTotalPages(pageEntity.getTotalPages());
 		return searchBean;
 	}
 	
-	public ClientBean save(ClientBean bean) {
+	public ClientBean save(ClientBean bean) throws Exception {
+		Date today = new Date();
+		bean.setModifyDate(today);
+		if (bean.getId() != null) {
+			return update(bean);
+		}
+		bean.setRegisterDate(today);
+		bean.setCardNum(generateCardNo());
+		try {
+			ClientEntity entity = clientPersistService.save(bulidEntity(bean));
+			bean.setId(entity.getId());
+			bean.setSuccess(true);
+			saveTimes = 0;
+		} catch(Exception e) {
+			// try again
+			if (saveTimes < maxSaveTimes) {
+				saveTimes ++;
+				save(bean);
+			} else {
+				throw new Exception("保存失败");
+			}
+		}
 		return bean;
+	}
+	
+	public ClientBean update(ClientBean bean) {
+		ClientEntity entity = clientPersistService.findById(bean.getId());
+		entity.setAddress(CommUtil.isEmpty(bean.getAddress()) ? entity.getAddress() : bean.getAddress());
+		entity.setName(CommUtil.isEmpty(bean.getName()) ? entity.getName() : bean.getName());
+		entity.setPhoneNumber(CommUtil.isEmpty(bean.getPhoneNumber()) ? entity.getPhoneNumber() : bean.getPhoneNumber());
+		entity.setPostCode(CommUtil.isEmpty(bean.getPostCode()) ? entity.getPostCode() : bean.getPostCode());
+		entity.setCity(CommUtil.isEmpty(bean.getCity()) ? entity.getCity() : bean.getCity());
+		entity.setProvince(CommUtil.isEmpty(bean.getProvince()) ? entity.getProvince() : bean.getProvince());
+		entity.setShopName(CommUtil.isEmpty(bean.getShopName()) ? entity.getShopName() : bean.getShopName());
+		entity.setTelNumber(CommUtil.isEmpty(bean.getTelNumber()) ? entity.getTelNumber() :bean.getTelNumber());
+		entity.setBirthday(bean.getBirthday() == null ? entity.getBirthday() : bean.getBirthday());
+		bean = bulidBean(clientPersistService.save(entity));
+		bean.setSuccess(true);
+		return bean;
+	}
+	
+	public JsonBean delete(ClientBean bean) {
+		JsonBean json = new JsonBean();
+		clientPersistService.delete(bulidEntity(bean));
+		json.setSuccess(true);
+		return json;
 	}
 	
 	private ClientEntity bulidEntity(ClientBean bean) {
@@ -144,6 +264,7 @@ public class ClientService {
 		entity.setCity(bean.getCity());
 		entity.setId(bean.getId());
 		entity.setModifyDate(bean.getModifyDate());
+		entity.setRegisterDate(bean.getRegisterDate());
 		entity.setName(bean.getName());
 		entity.setPhoneNumber(bean.getPhoneNumber());
 		entity.setPostCode(bean.getPostCode());
@@ -184,6 +305,7 @@ public class ClientService {
 		this.regist_date_index = -1;
 		this.post_code_index = -1;
 		this.shop_name_index = -1;
+		this.province_index = -1;
 	}
 	
 	private void setCellIndexs(Cell[] cells) {
@@ -213,6 +335,8 @@ public class ClientService {
 					this.area_index = i;
 				} else if (SHOP_NAME.equals(str)) {
 					this.shop_name_index = i;
+				} else if (PROVINCE.equals(str)) {
+					this.province_index = i;
 				}
 			} 
 		}
@@ -244,5 +368,5 @@ public class ClientService {
 		}
 		return list;
 	}
-	
+
 }

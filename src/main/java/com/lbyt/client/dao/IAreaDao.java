@@ -15,13 +15,10 @@ public interface IAreaDao extends Repository<AreaEntity, Integer>{
 	
 	void save(AreaEntity entity);
 	
-	@Transactional(propagation = Propagation.SUPPORTS)
 	List<AreaEntity> findAll();
 	
-	@Transactional(propagation = Propagation.SUPPORTS)
 	List<AreaEntity> findAll(Specification<AreaEntity> specification);
 	
-	@Transactional(propagation = Propagation.SUPPORTS)
 	List<AreaEntity> findByDetail(AreaEntity entity);
 	
 	@Transactional(propagation = Propagation.SUPPORTS)

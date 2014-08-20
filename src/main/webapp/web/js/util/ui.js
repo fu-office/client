@@ -2021,9 +2021,11 @@
 					pager.append('<div class="tb-pg-sptr">');
 					pager.append($('<div class="tb-pg-btn"><a class="tb-pg-fst"></a><a class="tb-pg-pre"></a><a class="tb-pg-next"></a><a class="tb-pg-last"></a><a class="tb-pg-rfs"></a></div>'));
 					pager.append('<div class="tb-pg-sptr">');
+					pager.append('<div class="tb-pg-count">共<span class="tb-total-eles">0</span>条</div>');
 					this.$pageSize = pager.find('select');
 					this.$totalSize = pager.find('.tb-total-size');
 					this.$currentPage = pager.find('input');
+					this.$countEles = pager.find('.tb-total-eles');
 					this.$tb.append(pager);
 					this.$bddiv.css('bottom', 30);
 					this._refreshPagerBtn();
@@ -2036,6 +2038,7 @@
 					this.currentPage = this.currentPage || 1;
 					this.$totalSize.text(this.totalSize);
 					this.$currentPage.val(this.currentPage);
+					this.$countEles.text(this.total);
 					this._refreshPagerBtn();
 				}
 			},

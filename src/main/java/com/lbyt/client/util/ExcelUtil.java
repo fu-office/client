@@ -101,6 +101,9 @@ public class ExcelUtil {
 				int titleLength = sheet.getRow(0).getLastCellNum();
 				for (i = 0; i < lastRowNum; i++) {
 					row = sheet.getRow(i);
+					if (row == null) {
+						continue;
+					}
 					int columnNum = row.getLastCellNum(), j = 0;
 					values = new Cell[titleLength];
 					columnNum = Math.min(columnNum, titleLength);

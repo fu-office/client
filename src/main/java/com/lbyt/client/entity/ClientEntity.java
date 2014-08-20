@@ -16,6 +16,10 @@ public class ClientEntity implements Serializable{
 	
 	private static final long serialVersionUID = 4417093805657707087L;
 
+	public static final String REGIST_DATE = "registerDate";
+	
+	public static final String ID = "id";
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
