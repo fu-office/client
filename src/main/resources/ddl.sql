@@ -1,4 +1,5 @@
 -- client database
+drop database lbyt;
 CREATE DATABASE if not exists `lbyt` DEFAULT CHARACTER SET utf8;
 use lbyt;
 drop table if exists lbyt_client;
