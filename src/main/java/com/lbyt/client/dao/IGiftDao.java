@@ -1,5 +1,7 @@
 package com.lbyt.client.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +19,10 @@ public interface IGiftDao extends Repository<GiftEntity, Integer>{
 	GiftEntity findByPhone(String phone);
 
 	Page<GiftEntity> findAll(Specification<AreaEntity> specification, Pageable page);
+	
+	List<GiftEntity> findAll(Specification<AreaEntity> specification);
+
+	GiftEntity findById(Integer id);
 	
 }
 

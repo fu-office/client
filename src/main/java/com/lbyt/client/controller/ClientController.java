@@ -2,6 +2,8 @@ package com.lbyt.client.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +16,9 @@ import com.lbyt.client.bean.ClientSearchBean;
 import com.lbyt.client.bean.CustomerImportJsonBean;
 import com.lbyt.client.bean.ExcelOutputJsonBean;
 import com.lbyt.client.bean.JsonBean;
+import com.lbyt.client.error.ErrorBean;
 import com.lbyt.client.service.ClientService;
+import com.lbyt.client.util.ExcelUtil;
 
 @Controller
 @RequestMapping("/customer")
@@ -31,9 +35,21 @@ public class ClientController {
 	
 	@RequestMapping("/export.json")
 	@ResponseBody
-	public ExcelOutputJsonBean export(@RequestBody ClientSearchBean bean){
-		
-		return null;
+	public ExcelOutputJsonBean export(@RequestBody ClientSearchBean bean, HttpServletResponse response){
+		ExcelOutputJsonBean jsonBean = new ExcelOutputJsonBean();
+		jsonBean.getCells().addAll(clientService.getCells(bean));
+		jsonBean.setSpreadHeads(clientService.getHeads());
+		jsonBean.setHeads(clientService.getHeads());
+		response.setContentType("application/msexcel");
+		try {
+			ExcelUtil.buildExcelFile(jsonBean.getBean(), jsonBean.getErrors(), response.getOutputStream());
+		} catch (IOException e) {
+			jsonBean.setSuccess(false);
+			ErrorBean error = new ErrorBean();
+			error.setMessage(e.getMessage());
+			jsonBean.getErrors().add(error);
+		}
+		return jsonBean;
 	}
 	
 	@RequestMapping("/search.json")
@@ -48,7 +64,9 @@ public class ClientController {
 		return clientService.delete(bean);
 	}
 	
-	public ClientBean save(@RequestBody ClientBean bean) {
+	@RequestMapping("/save.json")
+	@ResponseBody
+	public ClientBean save(@RequestBody ClientBean bean) throws Exception {
 		return clientService.save(bean);
 	}
 }

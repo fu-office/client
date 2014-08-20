@@ -70,8 +70,35 @@ public class GiftPersistService {
 				return predicate;
 			}
 			
-		},new PageRequest(page.getPageNumber() - 1, page.getPageSize(), new Sort(Direction.DESC,
-				GiftEntity.DATE)));
+		},new PageRequest(page.getPageNumber() - 1, page.getPageSize(), new Sort(Direction.ASC,
+				GiftEntity.ID)));
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<GiftEntity> findByStartDateAndEndDate(final Date startDate, final Date endDate){
+		return giftDao.findAll(new Specification<AreaEntity>(){
+
+			@Override
+			public Predicate toPredicate(Root<AreaEntity> root,
+					CriteriaQuery<?> query, CriteriaBuilder cb) {
+				Predicate predicate = null;
+				Path<Date> date = root.get("date");
+				if (startDate != null) {
+					predicate = cb.greaterThanOrEqualTo(date, startDate);
+				}
+				if (endDate != null) {
+					predicate = predicate == null ?  cb.greaterThanOrEqualTo(date, startDate) : 
+						cb.and(predicate, cb.lessThanOrEqualTo(date, endDate));
+				}
+				return predicate;
+			}
+			
+		});
+	}
+
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public GiftEntity findById(GiftEntity gift) {
+		return giftDao.findById(gift.getId());
 	}
 	
 }

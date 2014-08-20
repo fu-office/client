@@ -76,6 +76,10 @@ public class ClientService {
 	
 	private int shop_name_index = -1;
 	
+	private int saveTimes = 0;
+	
+	private int maxSaveTimes = 7;
+	
 	@Autowired
 	ClientPersistService clientPersistService;
 	
@@ -107,7 +111,7 @@ public class ClientService {
 						entity.setBirthday(birthday_index == -1 || cells[birthday_index] == null  ? null : DateUtil.parseDate(cells[birthday_index].getValue()));
 					} catch (ParseException e) {}
 					try {
-						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? null : DateUtil.parseDate(cells[regist_date_index].getValue()));
+						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? modifyDate : DateUtil.parseDate(cells[regist_date_index].getValue()));
 					} catch (ParseException e) {}
 					entity.setModifyDate(modifyDate);
 					entity.setCardNum(generateCardNo());
@@ -131,11 +135,58 @@ public class ClientService {
 		return bulidBean(entity);
 	}
 	
+	public String[] getHeads() {
+		return new String[]{
+				REGIST_DATE,
+				CARD_NO,
+				CLIENT_NAME,
+				CLIENT_PHONE,
+				CLIENT_TEL,
+				CLIENT_ADDR,
+				POST_CODE,
+				BIRTHDAY,
+				PROVINCE,
+				AREA,
+				SHOP_NAME
+		};
+	}
+	
+	public List<List<Object>> getCells(ClientSearchBean bean){
+		List<List<Object>> list = new ArrayList<List<Object>>();
+		List<ClientEntity> entities = findAll(bean);
+		// order 
+		for (ClientEntity entity : entities) {
+			List<Object> row = new ArrayList<Object>();
+			row.add(DateUtil.date2String(entity.getRegisterDate()));
+			row.add(entity.getCardNum());
+			row.add(entity.getName());
+			row.add(entity.getPhoneNumber());
+			row.add(entity.getTelNumber());
+			row.add(entity.getAddress());
+			row.add(entity.getPostCode());
+			row.add(DateUtil.date2String(entity.getBirthday()));
+			row.add(entity.getProvince());
+			row.add(entity.getCity());
+			row.add(entity.getShopName());
+			list.add(row);
+		}
+		return list; 
+	}
+	
+	private List<ClientEntity> findAll(ClientSearchBean bean){
+		ClientBean client = new ClientBean();
+		client.setName(bean.getName());
+		client.setProvince(bean.getProvince());
+		client.setCity(bean.getCity());
+		return clientPersistService.findAll(bulidEntity(client), bean.getShopState());
+	}
+	
 	public ClientSearchBean search(ClientSearchBean bean){
 		PageBean page = new PageBean();
 		page.setPageNumber(bean.getPageNumber());
 		page.setPageSize(bean.getPageSize());
 		ClientBean client = new ClientBean();
+		client.setName(bean.getName());
 		client.setProvince(bean.getProvince());
 		client.setCity(bean.getCity());
 		client.setShopState(bean.getShopState());
@@ -157,11 +208,28 @@ public class ClientService {
 		return searchBean;
 	}
 	
-	public ClientBean save(ClientBean bean) {
+	public ClientBean save(ClientBean bean) throws Exception {
+		Date today = new Date();
+		bean.setModifyDate(today);
 		if (bean.getId() != null) {
 			return update(bean);
 		}
-		clientPersistService.save(bulidEntity(bean));
+		bean.setRegisterDate(today);
+		bean.setCardNum(generateCardNo());
+		try {
+			ClientEntity entity = clientPersistService.save(bulidEntity(bean));
+			bean.setId(entity.getId());
+			bean.setSuccess(true);
+			saveTimes = 0;
+		} catch(Exception e) {
+			// try again
+			if (saveTimes < maxSaveTimes) {
+				saveTimes ++;
+				save(bean);
+			} else {
+				throw new Exception("保存失败");
+			}
+		}
 		return bean;
 	}
 	
@@ -176,7 +244,9 @@ public class ClientService {
 		entity.setShopName(CommUtil.isEmpty(bean.getShopName()) ? entity.getShopName() : bean.getShopName());
 		entity.setTelNumber(CommUtil.isEmpty(bean.getTelNumber()) ? entity.getTelNumber() :bean.getTelNumber());
 		entity.setBirthday(bean.getBirthday() == null ? entity.getBirthday() : bean.getBirthday());
-		return bulidBean(clientPersistService.save(entity));
+		bean = bulidBean(clientPersistService.save(entity));
+		bean.setSuccess(true);
+		return bean;
 	}
 	
 	public JsonBean delete(ClientBean bean) {
@@ -194,6 +264,7 @@ public class ClientService {
 		entity.setCity(bean.getCity());
 		entity.setId(bean.getId());
 		entity.setModifyDate(bean.getModifyDate());
+		entity.setRegisterDate(bean.getRegisterDate());
 		entity.setName(bean.getName());
 		entity.setPhoneNumber(bean.getPhoneNumber());
 		entity.setPostCode(bean.getPostCode());
@@ -297,5 +368,5 @@ public class ClientService {
 		}
 		return list;
 	}
-	
+
 }

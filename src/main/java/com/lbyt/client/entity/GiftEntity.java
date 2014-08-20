@@ -17,6 +17,8 @@ public class GiftEntity implements Serializable {
 	private static final long serialVersionUID = 2751231434154186927L;
 
 	public static final String DATE = "date";
+
+	public static final String ID = "id";
 	
 	@Id
 	@Column(name="id")

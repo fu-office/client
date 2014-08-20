@@ -33,6 +33,10 @@
 								<option value="无专柜">无专柜</option>
 							</select>
 						</div>
+						<div>
+							<label class="fm-lb">姓名：</label>
+							<input type="text" name="name" />
+						</div>
 						<div class="btn-grp">
 							<button class="btn search">
 								<i class="icon-search"></i> 搜索
@@ -126,7 +130,7 @@
 				</div>
 				<div>
 					<label class="fm-lb">联系电话</label>
-					<input type="text" name="phone" />
+					<input type="text" name="phone" class="ht-number"/>
 				</div>
 				<div>
 					<label class="fm-lb">日期</label>
@@ -168,16 +172,16 @@
 			<div class="fm-row">
 				<div>
 					<label class="fm-lb">姓名：</label>
-					<input type="text" name="name" class="required"/>
+					<input type="text" name="name" class="required" maxlength='30'/>
 					<input type="hidden" name="id">
 				</div>
 				<div>
 					<label class="fm-lb">手机号：</label>
-					<input type="text" name="phoneNumber" class="required"/>
+					<input type="text" name="phoneNumber" class="ht-number required" maxlength='20'/>
 				</div>
 				<div>
 					<label class="fm-lb">联系电话：</label>
-					<input type="text" name="telNumber"/>
+					<input type="text" name="telNumber" maxlength='20'/>
 				</div>
 				<div>
 					<label class="fm-lb">区域省份：</label>
@@ -189,11 +193,11 @@
 				</div>
 				<div>
 					<label class="fm-lb">联系地址：</label>
-					<input type="text" name="address" class="required"/>
+					<input type="text" name="address" class="required long" maxlength='255'/>
 				</div>
 				<div>
 					<label class="fm-lb">邮编：</label>
-					<input type="text" name="postCode"/>
+					<input type="text" name="postCode" maxlength='10'/>
 				</div>
 				<div>
 					<label class="fm-lb">生日：</label>
@@ -201,7 +205,7 @@
 				</div>
 				<div>
 					<label class="fm-lb">专柜名：</label>
-					<input type="text" name="shopName"/>
+					<input type="text" name="shopName" maxlength='100'/>
 				</div>
 			</div>
 			<div class="btn-grp align-center">

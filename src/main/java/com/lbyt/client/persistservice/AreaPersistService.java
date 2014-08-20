@@ -35,15 +35,18 @@ public class AreaPersistService {
 		areaDao.save(entity);
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<AreaEntity> findAll() {
 		return areaDao.findAll();
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public AreaEntity findByDetail(AreaEntity entity) {
 		List<AreaEntity> list = areaDao.findByDetail(entity.getDetail());
 		return list == null || list.size() == 0 ? null : list.get(0);
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public List<AreaEntity> findByProvAndCityAndShopState(final AreaEntity entity) {
 		return areaDao.findAll(new Specification<AreaEntity>(){
 
@@ -69,10 +72,12 @@ public class AreaPersistService {
 		});
 	}
 
+	@Transactional
 	public void deleteById(AreaEntity entity) {
 		areaDao.deleteById(entity.getId());
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public AreaEntity findById(AreaEntity entity){
 		return areaDao.findById(entity.getId());
 	}

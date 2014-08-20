@@ -14,6 +14,7 @@
 		 CLIENT_SEARCH : "customer/search.json",
 		 CLIENT_DELETE : "customer/deleteById.json",
 		 CLIENT_SAVE : "customer/save.json",
+		 CLIENT_EXPORT : "customer/export.json",
 		 AREA_IMPORT : "area/import.json",
 		 AREA_EXPORT : "area/export.json",
 		 AREA_SEARCH : "area/search.json",
@@ -35,9 +36,7 @@
 				$list.grid({
 					single : true,
 					height : 400,
-					columns : [{title:"编号",field:"",width:50,formatter : function(ui,data){
-						return data.index + 1;
-					}},
+					columns : [{title:"编号",field:"id",width:80},
 					{title : "登记日期", field : "registerDate",width:120, formatter : function(ui, data){
 						return data.cell ? $.formatDate(new Date(data.cell), "yyyy-MM-dd") : "";
 					}},
@@ -47,12 +46,18 @@
 					{title : "电话", field : "telNumber",width:120},
 					{title : "联系地址", field : "address",width:350},
 					{title : "邮编", field : "postCode",width:100},
-					{title : "生日", field : "birthday",width:120},
+					{title : "生日", field : "birthday",width:120, formatter : function(ui, data){
+						return data.cell ? $.formatDate(new Date(data.cell), "yyyy-MM-dd") : "";
+					}},
 					{title : "区域", field : "prov-city",width:120,formatter : function(ui, data){
 						var row = data.row;
 						return row.province ? row.province + "-" + row.city : row.city; 
 					}},
-					{title : "专柜名", field : "shopName",width:120}],
+					{title : "专柜名", field : "shopName",width:120},
+					{title : "操作", field : "opera",width:120, formatter : function(ui, data){
+						return "<a href='javascript:void(0);' class='edit-link'> 修改 </a> " +
+							"<a href='javascript:void(0);' class='delete-link'> 删除 </a>";
+					}}],
 					pagination : true,
 					pager : {
 						select : function(pageNum, pageSize){
@@ -68,54 +73,31 @@
 				});
 			},
 			_initParams : function(){
-				var $m = this.$m;
-				$.ajaxJSON({
-					url : URL.AREA_PARAMS,
-					data : {},
-					success : function(d){
-						var list = d.list, areaMap = {}, provMap = {"" : ""};
-						for (var i = 0, len = list.length; i < len; i++) {
-							var citys = areaMap[list[i].prov] || [{text : "", value : ""}];
-							provMap[list[i].prov] = list[i].prov;
-							citys.push({
-								text : list[i].city,
-								vlaue : list[i].city
-							});
-							areaMap[list[i].prov] = citys;
-						}
-						$m.find("#province").select("destroy").select({
-							data : provMap,
-							after : function(opt){
-								$m.find("#city").select("data", areaMap[opt.val] || {});
-							}
-						});
-						$("#province").select("trigger");
-						$("#client_add_prov").select("destroy").select({
-							data : provMap,
-							after : function(opt){
-								$("#client_add_city").select("data", areaMap[opt.val] || {});
-							}
-						});
-						$("#client_add_prov").select("trigger");
-					}
-				});
+				initProvCity();
 			},
 			deleteClient : function(data, fn){
-				$.ajaxJSON({
-					url : URL.CLIENT_DELETE,
-					data : data,
-					success : function(d){
-						$.msg("删除成功");
-						fn && fn(d);
+				$.msg({
+					type : "confirm",
+					msg : "确定删除",
+					ok : function(){
+						$.ajaxJSON({
+							url : URL.CLIENT_DELETE,
+							data : data,
+							success : function(d){
+								$.msg("删除成功");
+								fn && fn(d);
+							}
+						});
 					}
 				});
 			},
-			save : function(data){
+			save : function(data, fn){
 				$.ajaxJSON({
 					url : URL.CLIENT_SAVE,
 					data : data,
 					success : function(d){
 						$.msg("保存成功");
+						fn && fn(d);
 					}
 				});
 			},
@@ -132,11 +114,15 @@
 			},
 			editDialog : function(data){
 				var $dialog = $("#client_add_dialog");
-				$dialog.find("input").val("");
+				$dialog.find(".ui-select-button").removeClass("error");
+				$dialog.find("input").val("").removeClass("error");
 				if (data.id) {
+					data.birthday = data.birthday ? $.formatDate(new Date(data.birthday), "yyyy-MM-dd") : data.birthday;
 					$dialog.dialog("option", {
 						title : "更新"
 					}).j2f(data);	
+					$("#client_add_prov").select("trigger");
+					$("#client_add_city").select("value", data.city);
 				} else {
 					$dialog.dialog("option", {
 						title : "新增"
@@ -145,11 +131,16 @@
 				$dialog.dialog("open");
 			},
 			exportExcel : function(data){
-				
+				$.dlFile({
+					url : URL.CLIENT_EXPORT,
+					data : data,
+					fileName : (data.province ? data.province : "") + (data.city ? data.city : "") + "客户名单.xls"
+				});
 			},
 			_bindEvent : function(){
 				var $m = this.$m,
-					_self = this;
+					_self = this,
+					$grid = $m.find(".list");
 				$m.on("click", ".btn", function(){
 					var $this = $(this);
 					if ($this.is(".search")) {
@@ -160,6 +151,19 @@
 						_self.exportExcel($m.f2j());
 					} else if ($this.is(".add")) {
 						_self.editDialog({});
+					}
+				});
+				$grid.on("click", "a", function(){
+					var $link = $(this),
+						index = $link.parents("tr").attr("findex"),
+						row = $grid.grid("getRow", index);
+					if ($link.is(".edit-link")) {
+						_self.editDialog(row);
+					} else if ($link.is(".delete-link")) {
+						_self.deleteClient(row, function(){
+							$grid.grid("deleteRow", index);
+							$grid.grid("reload");
+						});
 					}
 				});
 				$("#client-excel").change(function(){
@@ -184,9 +188,11 @@
 					modal : true
 				}).find(".submit-update").click(function(){
 					if ($dialog.checkRequired()) {
-						_self.save($dialog.f2j());
+						_self.save($dialog.f2j(), function(){
+							$dialog.dialog("close");
+						});
 					}
-				});
+				}).end().find(".date").datetimepicker();
 			}
 	},
 	Gift = {
@@ -197,17 +203,15 @@
 				this.$m.find(".list").grid({
 					height : 400,
 					single : true,
-					columns : [{title : "编号", field : "index", width : 50, formatter : function(ui, data){
-						return data.index + 1;
-					}},
+					columns : [{title : "编号", field : "id", width : 80},
 					{title : "姓名", field : "name"},
 					{title : "联系电话", field : "phone"},
 					{title : "登记日期", field : "date", formatter : function(ui, data){
 						return $.formatDate(new Date(data.cell), "yyyy-MM-dd");
 					}},
 					{title : "操作", field : "opera", width : 100, formatter : function(ui, data){
-//						"<a href='javascript:void(0);' data-index='" + data.index + "' class='edit-link'>修改</a>&nbsp;&nbsp;" + 
-						return	"<a href='javascript:void(0);' class='delete-link'>删除</a>";
+						return "<a href='javascript:void(0);' class='edit-link'>修改</a>&nbsp;&nbsp;" + 
+							"<a href='javascript:void(0);' class='delete-link'>删除</a>";
 					}}],
 					pagination : true,
 					pager : {
@@ -242,7 +246,19 @@
 				$("#gift_add_date").datetimepicker();
 			},
 			exportExcel : function(data){
-				
+				var prefix = "";
+				if (data.startDate && data.endDate) {
+					prefix = data.startDate + "-" + data.endDate; 
+				} else if (data.startDate) {
+					prefix = data.startDate + "-至今";
+				} else if (data.endDate){
+					prefix = "截止" + data.endDate;
+				}
+				$.dlFile({
+					url : URL.GIFT_EXPORT,
+					data : data,
+					fileName : prefix + "赠品.xls"
+				});
 			},
 			_bindEvent : function(){
 				var $m = this.$m,
@@ -310,6 +326,7 @@
 				$("#gift_add").dialog("open").find("input").val("");
 				var $dialog = $("#gift_add");
 				if (data.id) {
+					data.date = data.date ? $.formatDate(new Date(data.date), "yyyy-MM-dd") : data.date;
 					$dialog.j2f(data);
 					$dialog.dialog("option", {
 						title : "更新"
@@ -358,9 +375,7 @@
 					single : true,
 					height : 400, 
 					columns : [
-					       {title : "序号", field : "index", width : 50,formatter : function(ui, data){
-					    	   return data.index + 1;
-					       }},
+					       {title : "编号", field : "id", width : 80},
 					       {title : "省", field : "prov"},
 				           {title : "市", field : "city"},
 				           {title : "专柜状态", field : "shopState"},
@@ -393,6 +408,7 @@
 						success : function(d){
 							$.msg("保存成功");
 							fn && fn(d);
+							initProvCity();
 						}
 					});
 				} else {
@@ -487,6 +503,7 @@
 					success : function(d){
 						$.msg("删除成功");
 						fn && fn(d);
+						initProvCity();
 					}
 				});
 			}
@@ -511,4 +528,44 @@
 		});
 		$(".tab").find("li").eq(0).click();
 	})();
+	// comm function
+	function initProvCity(){
+		$.ajaxJSON({
+			url : URL.AREA_PARAMS,
+			data : {},
+			success : function(d){
+				var list = d.list, areaMap = {}, provMap = {"" : ""};
+				for (var i = 0, len = list.length; i < len; i++) {
+					var citys = areaMap[list[i].prov] || [{text : "", value : ""}];
+					provMap[list[i].prov] = list[i].prov;
+					citys.push({
+						text : list[i].city,
+						value : list[i].city
+					});
+					areaMap[list[i].prov] = citys;
+				}
+				$("#province").select("destroy").select({
+					data : provMap,
+					after : function(opt){
+						$("#city").select("data", areaMap[opt.val] || {});
+					}
+				});
+				$("#province").select("trigger");
+				$("#client_add_prov").select("destroy").select({
+					data : provMap,
+					after : function(opt){
+						$("#client_add_city").select("data", (areaMap[opt.val] && areaMap[opt.val].slice(1)) || {});
+					}
+				});
+				$("#client_add_prov").select("trigger");
+				$("#area_prov").select("destroy").select({
+					data : provMap,
+					after : function(opt){
+						$("#area_city").select("data", areaMap[opt.val] || {});
+					}
+				});
+				$("#area_prov").select("trigger");
+			}
+		});
+	}
 }());
