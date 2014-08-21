@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,12 +112,18 @@ public class ClientService {
 						entity.setBirthday(birthday_index == -1 || cells[birthday_index] == null  ? null : DateUtil.parseDate(cells[birthday_index].getValue()));
 					} catch (ParseException e) {}
 					try {
-						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null  ? modifyDate : DateUtil.parseDate(cells[regist_date_index].getValue()));
+						entity.setRegisterDate(regist_date_index == -1 || cells[regist_date_index] == null || CommUtil.isEmpty(cells[regist_date_index].getValue()) ? modifyDate : DateUtil.parseDate(cells[regist_date_index].getValue()));
 					} catch (ParseException e) {}
 					entity.setModifyDate(modifyDate);
-					entity.setCardNum(generateCardNo());
-					clientPersistService.save(entity);
-					entities.add(entity);
+//					entity.setCardNum(generateCardNo());
+					if (!CommUtil.isEmpty(entity.getCardNum())) {
+						try {
+							clientPersistService.save(entity);
+						} catch(DataAccessException e){
+							continue;
+						}
+						entities.add(entity);
+					}
 				}
 			}
 			jsonBean.setList(bulidClientList(entities));
@@ -227,7 +234,7 @@ public class ClientService {
 			return update(bean);
 		}
 		bean.setRegisterDate(today);
-		bean.setCardNum(generateCardNo());
+//		bean.setCardNum(generateCardNo());
 		try {
 			ClientEntity entity = clientPersistService.save(bulidEntity(bean));
 			bean.setId(entity.getId());
