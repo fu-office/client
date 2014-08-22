@@ -41,6 +41,14 @@ public interface IClientDao extends Repository<ClientEntity, Integer>{
 	List<ClientEntity> findByNameAndPhoneNumberAndAddress(String name, String phoneNumber, String address);
 
 	@Transactional(propagation = Propagation.SUPPORTS)
+	@Query("Select a From ClientEntity a where a.city = ?4 and a.province = ?3 and ((month(a.birthday) = month(?1) and dayofmonth(a.birthday) >= dayofmonth(?1)) or (month(a.birthday) = month(?2) and dayofmonth(a.birthday) <= dayofmonth(?2)))")
+	List<ClientEntity> findRecentBirthday(Date today, Date later, String province, String city);
+	
+	@Transactional(propagation = Propagation.SUPPORTS)
+	@Query("Select a From ClientEntity a where a.province = ?3 and ((month(a.birthday) = month(?1) and dayofmonth(a.birthday) >= dayofmonth(?1)) or (month(a.birthday) = month(?2) and dayofmonth(a.birthday) <= dayofmonth(?2)))")
+	List<ClientEntity> findRecentBirthday(Date today, Date later, String province);
+	
+	@Transactional(propagation = Propagation.SUPPORTS)
 	@Query("Select a From ClientEntity a where (month(a.birthday) = month(?1) and dayofmonth(a.birthday) >= dayofmonth(?1)) or (month(a.birthday) = month(?2) and dayofmonth(a.birthday) <= dayofmonth(?2))")
 	List<ClientEntity> findRecentBirthday(Date today, Date later);
 }

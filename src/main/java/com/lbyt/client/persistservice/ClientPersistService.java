@@ -147,4 +147,20 @@ public class ClientPersistService {
 		return clientDao.findRecentBirthday(today, todayAfterMonth);
 	}
 	
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public List<ClientEntity> getMonthBirthday(ClientEntity entity) {
+		Date today = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(today);
+		calendar.add(Calendar.DATE, CommConstants.MONTH);
+		Date todayAfterMonth = calendar.getTime();
+		if (CommUtil.isEmpty(entity.getProvince())) {
+			return clientDao.findRecentBirthday(today, todayAfterMonth);
+		} else if (CommUtil.isEmpty(entity.getCity())) {
+			return clientDao.findRecentBirthday(today, todayAfterMonth, entity.getProvince());
+		} else {
+			return clientDao.findRecentBirthday(today, todayAfterMonth, entity.getProvince(), entity.getCity());
+		}
+	}
+	
 }

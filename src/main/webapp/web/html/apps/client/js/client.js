@@ -138,11 +138,11 @@
 					fileName : (data.province ? data.province : "") + (data.city ? data.city : "") + "客户名单.xls"
 				});
 			},
-			recentMonth : function(){
+			recentMonth : function(data){
 				var _self = this;
 				$.ajaxJSON({
 					url : URL.CLIENT_BIRTHDAY,
-					data : {},
+					data : data || {},
 					success : function(d){
 						_self.$m.find(".list").grid("loadData", {total : d.list.length, currentPage : 1, rows : d.list, pageSize : d.list.length});
 					}
@@ -163,7 +163,7 @@
 					} else if ($this.is(".add")) {
 						_self.editDialog({});
 					} else if ($this.is(".mon_birthday")) {
-						_self.recentMonth();
+						_self.recentMonth($m.f2j());
 					}
 				});
 				$grid.on("click", "a", function(){

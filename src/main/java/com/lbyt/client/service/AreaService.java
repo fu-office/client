@@ -94,8 +94,8 @@ public class AreaService {
 	
 	public AreaBean saveOrUpdate(AreaBean area) {
 		if (area.getId() == null) {
-			String prov = area.getProv();
-			String city = area.getCity();
+			String prov = CommUtil.trim(area.getProv());
+			String city = CommUtil.trim(area.getCity());
 			area.setShopState(area.getShopState() == null ? NO_SHOP : area.getShopState());
 			if (CommUtil.isEmpty(prov) || CommUtil.isEmpty(city)) {
 				area.setSuccess(false);
@@ -177,11 +177,11 @@ public class AreaService {
 	
 	private AreaEntity bulidEntity (AreaBean area) {
 		AreaEntity entity = new AreaEntity();
-		entity.setCity(area.getCity());
+		entity.setCity(CommUtil.trim(area.getCity()));
 		entity.setDate(area.getDate());
-		entity.setDetail(area.getDetail());
+		entity.setDetail(CommUtil.trim(area.getDetail()));
 		entity.setId(area.getId());
-		entity.setProv(area.getProv());
+		entity.setProv(CommUtil.trim(area.getProv()));
 		entity.setShopState(area.getShopState());
 		return entity;
 	}

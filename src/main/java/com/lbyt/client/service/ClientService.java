@@ -193,10 +193,10 @@ public class ClientService {
 		page.setPageNumber(bean.getPageNumber());
 		page.setPageSize(bean.getPageSize());
 		ClientBean client = new ClientBean();
-		client.setName(bean.getName());
-		client.setProvince(bean.getProvince());
-		client.setCity(bean.getCity());
-		client.setShopState(bean.getShopState());
+		client.setName(CommUtil.trim(bean.getName()));
+		client.setProvince(CommUtil.trim(bean.getProvince()));
+		client.setCity(CommUtil.trim(bean.getCity()));
+		client.setShopState(CommUtil.trim(bean.getShopState()));
 		return search(client, page);
 	}
 	
@@ -225,6 +225,20 @@ public class ClientService {
 		json.setSuccess(true);
 		json.setList(list);
 		return json;
+	}
+	
+	public ClientSearchBean getMonthBirthday(ClientSearchBean searchBean) {
+		ClientBean bean = new ClientBean();
+		bean.setCity(searchBean.getCity());
+		bean.setProvince(searchBean.getProvince());
+		List<ClientEntity> entities = clientPersistService.getMonthBirthday(bulidEntity(bean));
+		List<ClientBean> list = new ArrayList<ClientBean>();
+		for (ClientEntity entity : entities) {
+			list.add(bulidBean(entity));
+		}
+		searchBean.setSuccess(true);
+		searchBean.setList(list);
+		return searchBean;
 	}
 	
 	public ClientBean save(ClientBean bean) throws Exception {
@@ -277,20 +291,20 @@ public class ClientService {
 	
 	private ClientEntity bulidEntity(ClientBean bean) {
 		ClientEntity entity = new ClientEntity();
-		entity.setAddress(bean.getAddress());
+		entity.setAddress(CommUtil.trim(bean.getAddress()));
 		entity.setBirthday(bean.getBirthday());
-		entity.setCardNum(bean.getCardNum());
-		entity.setCity(bean.getCity());
+		entity.setCardNum(CommUtil.trim(bean.getCardNum()));
+		entity.setCity(CommUtil.trim(bean.getCity()));
 		entity.setId(bean.getId());
 		entity.setModifyDate(bean.getModifyDate());
 		entity.setRegisterDate(bean.getRegisterDate());
-		entity.setName(bean.getName());
-		entity.setPhoneNumber(bean.getPhoneNumber());
-		entity.setPostCode(bean.getPostCode());
-		entity.setProvince(bean.getProvince());
-		entity.setRemark(bean.getRemark());
-		entity.setShopName(bean.getShopName());
-		entity.setTelNumber(bean.getTelNumber());
+		entity.setName(CommUtil.trim(bean.getName()));
+		entity.setPhoneNumber(CommUtil.trim(bean.getPhoneNumber()));
+		entity.setPostCode(CommUtil.trim(bean.getPostCode()));
+		entity.setProvince(CommUtil.trim(bean.getProvince()));
+		entity.setRemark(CommUtil.trim(bean.getRemark()));
+		entity.setShopName(CommUtil.trim(bean.getShopName()));
+		entity.setTelNumber(CommUtil.trim(bean.getTelNumber()));
 		return entity;
 	}
 	

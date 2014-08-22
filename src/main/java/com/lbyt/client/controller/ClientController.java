@@ -72,7 +72,7 @@ public class ClientController {
 	
 	@RequestMapping("/birthday.json")
 	@ResponseBody
-	public ClientSearchBean recentBirthday() {
-		return clientService.getMonthBirthday();
+	public ClientSearchBean recentBirthday(@RequestBody ClientSearchBean json) {
+		return clientService.getMonthBirthday(json);
 	}
 }
